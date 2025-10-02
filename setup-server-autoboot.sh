@@ -44,7 +44,7 @@ timeout 5 npm start > /dev/null 2>&1 &
 TEST_PID=$!
 sleep 3
 
-if curl -s http://localhost:3001/health | grep -q "ok"; then
+if curl -s http://localhost:3002/health | grep -q "ok"; then
     echo "   ✅ Server test successful"
     kill $TEST_PID 2>/dev/null
 else
@@ -82,7 +82,7 @@ fi
 
 echo "6. Verifying service..."
 sleep 3
-if curl -s http://localhost:3001/health | grep -q "ok"; then
+if curl -s http://localhost:3002/health | grep -q "ok"; then
     echo "   ✅ Service is responding correctly"
 else
     echo "   ❌ Service is not responding"
@@ -96,8 +96,8 @@ echo "=================="
 echo ""
 echo "✅ Copilot CLI Server is now running and will auto-start on boot"
 echo "✅ Service status: $(sudo systemctl is-active copilot-server.service)"
-echo "✅ Server URL: http://localhost:3001"
-echo "✅ WebSocket URL: ws://$(hostname -I | awk '{print $1}'):3001"
+echo "✅ Server URL: http://localhost:3002"
+echo "✅ WebSocket URL: ws://$(hostname -I | awk '{print $1}'):3002"
 echo ""
 echo "📋 Service Management Commands:"
 echo "   sudo systemctl status copilot-server    # Check status"

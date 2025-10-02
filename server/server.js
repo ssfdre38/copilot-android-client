@@ -3,7 +3,7 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 
 class CopilotCliServer {
-    constructor(port = 3001) {
+    constructor(port = 3002) {
         this.port = port;
         this.app = express();
         this.server = null;
@@ -213,7 +213,7 @@ class CopilotCliServer {
 }
 
 // Start the server
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 const server = new CopilotCliServer(port);
 server.startCleanupInterval();
 
