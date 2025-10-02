@@ -7,7 +7,8 @@ data class ChatMessage(
     val content: String,
     val sender: MessageSender,
     val timestamp: Date = Date(),
-    val isTyping: Boolean = false
+    val isTyping: Boolean = false,
+    val serverId: String? = null // For multi-server support
 )
 
 enum class MessageSender {
@@ -15,10 +16,14 @@ enum class MessageSender {
 }
 
 data class ServerConfig(
+    val id: String = System.currentTimeMillis().toString(),
+    val name: String,
     val url: String,
     val apiKey: String? = null,
-    val timeout: Long = 30000L
-)
+    val timeout: Long = 30000L,
+    val isDefault: Boolean = false,
+    val lastUsed: Date = Date()
+) : java.io.Serializable
 
 data class CopilotRequest(
     val message: String,

@@ -20,6 +20,8 @@ import com.github.copilot.client.model.QuickActionTemplates
 import com.github.copilot.client.network.CopilotWebSocketClient
 import com.github.copilot.client.ui.ChatAdapter
 import com.github.copilot.client.ui.QuickActionAdapter
+import com.github.copilot.client.utils.StorageManager
+import com.github.copilot.client.utils.ThemeManager
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -28,24 +30,37 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var quickActionAdapter: QuickActionAdapter
+    private lateinit var storageManager: StorageManager
     private val chatMessages = mutableListOf<ChatMessage>()
     private var sessionId: String = UUID.randomUUID().toString()
     private var isQuickActionsVisible = false
+    private var serverId: String? = null
+    private var serverName: String? = null
     
     companion object {
         var webSocketClient: CopilotWebSocketClient? = null
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme
+        ThemeManager.applyTheme(this)
+        
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        storageManager = StorageManager(this)
+        
+        // Get server info from intent
+        serverId = intent.getStringExtra("server_id")
+        serverName = intent.getStringExtra("server_name")
         
         setupToolbar()
         setupRecyclerView()
         setupQuickActions()
         setupMessageInput()
         setupKeystrokeButtons()
+        loadChatHistory()
         observeMessages()
         
         if (webSocketClient?.isConnected() != true) {
@@ -321,12 +336,6 @@ class ChatActivity : AppCompatActivity() {
         }
     }
     
-    private fun addMessageToChat(message: ChatMessage) {
-        chatMessages.add(message)
-        chatAdapter.submitList(chatMessages.toList())
-        scrollToBottom()
-    }
-    
     private fun addSystemMessage(message: String) {
         val systemMessage = ChatMessage(
             content = message,
@@ -340,6 +349,61 @@ class ChatActivity : AppCompatActivity() {
         if (lastMessage?.isTyping == true) {
             chatMessages.removeAt(chatMessages.size - 1)
             chatAdapter.submitList(chatMessages.toList())
+        }
+    }
+    
+    private fun loadChatHistory() {
+        serverId?.let { id ->
+            val settings = storageManager.loadAppSettings()
+            if (settings.chatHistoryEnabled) {
+                lifecycleScope.launch {
+                    val history = storageManager.loadChatHistory(id)
+                    chatMessages.addAll(history)
+                    chatAdapter.submitList(chatMessages.toList())
+                    scrollToBottom()
+                }
+            }
+        }
+    }
+    
+    private fun saveChatHistory() {
+        serverId?.let { id ->
+            val settings = storageManager.loadAppSettings()
+            if (settings.chatHistoryEnabled) {
+                lifecycleScope.launch {
+                    // Only save non-typing messages
+                    val messagesToSave = chatMessages.filter { !it.isTyping }
+                    storageManager.saveChatHistory(id, messagesToSave)
+                    
+                    // Cleanup old messages if needed
+                    storageManager.cleanupOldHistory(id, settings.maxChatHistory)
+                }
+            }
+        }
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        saveChatHistory()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        saveChatHistory()
+    }
+    
+    private fun addMessageToChat(message: ChatMessage) {
+        val messageWithServerId = message.copy(serverId = serverId)
+        chatMessages.add(messageWithServerId)
+        chatAdapter.submitList(chatMessages.toList())
+        scrollToBottom()
+        
+        // Auto-save after adding new messages (but don't block UI)
+        lifecycleScope.launch {
+            val settings = storageManager.loadAppSettings()
+            if (settings.chatHistoryEnabled) {
+                saveChatHistory()
+            }
         }
     }
     

@@ -177,24 +177,73 @@ adb logcat | grep CopilotClient
 - **Android Docs**: UI components and architecture
 - **Server Docs**: Node.js implementation details
 
-## 🔮 Future Enhancements
+## 🔮 Feature Status & Roadmap
 
-### Planned Features
+### ✅ Implemented Features
+- [x] **Multi-server Support**: Connect to multiple Copilot instances
+- [x] **Dark Mode**: Complete theme customization with system auto-detection
+- [x] **Chat History**: Persistent conversation storage per server
+- [x] **Auto-updates**: Automatic update checking and download
+- [x] **Offline Help**: Complete documentation and troubleshooting guide
+- [x] **Server Management**: Add, edit, delete, and organize servers
+- [x] **Quick Actions**: Common keystroke buttons for terminal operations
+- [x] **Real-time Communication**: WebSocket-based instant messaging
+- [x] **Network Scanning**: Auto-discover servers on local network
+- [x] **Settings Management**: Comprehensive configuration options
+
+### 🚧 In Progress
 - [ ] **File Upload/Download**: Share code files with Copilot
 - [ ] **Voice Input**: Speech-to-text for hands-free coding
 - [ ] **Syntax Highlighting**: Code display with proper formatting
-- [ ] **Dark Mode**: Theme customization options
+
+### 📋 Planned Features
 - [ ] **Multi-language**: Internationalization support
 - [ ] **Push Notifications**: Background response alerts
-- [ ] **Chat History**: Persistent conversation storage
-- [ ] **Multi-server**: Connect to multiple Copilot instances
-
-### Technical Improvements
 - [ ] **Message Encryption**: End-to-end security
 - [ ] **Offline Mode**: Cache responses for offline viewing
 - [ ] **Performance**: Optimize for low-bandwidth networks
 - [ ] **Analytics**: Usage tracking and insights
-- [ ] **Auto-update**: Over-the-air app updates
+
+### 🎯 Key Features Overview
+
+#### 🖥️ **Multi-Server Management**
+- Save unlimited server configurations
+- Quick switching between servers
+- Default server setting
+- Per-server chat history
+- Server status indicators
+- Import/Export configurations
+
+#### 🌙 **Dark Mode & Themes**
+- System automatic detection
+- Manual light/dark toggle
+- Material Design 3 compliance
+- Battery-friendly OLED optimization
+- Persistent theme settings
+
+#### 💾 **Chat History**
+- Automatic conversation saving
+- Per-server history isolation
+- Configurable history limits (100-5000 messages)
+- Search through chat history
+- Export conversation logs
+- Clear history options
+
+#### 🔄 **Auto-Updates**
+- Daily automatic update checks
+- Manual update checking
+- Direct APK download
+- Version comparison
+- Skip version option
+- Release notes display
+
+#### 📚 **Offline Help System**
+- Complete setup guides
+- Troubleshooting documentation
+- Feature explanations
+- Search functionality
+- Category organization
+- No internet required
 
 ## 👥 Contributing
 
