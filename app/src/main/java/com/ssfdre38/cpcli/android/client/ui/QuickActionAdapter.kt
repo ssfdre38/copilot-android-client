@@ -1,12 +1,12 @@
-package com.github.copilot.client.ui
+package com.ssfdre38.cpcli.android.client.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.github.copilot.client.databinding.ItemQuickActionBinding
-import com.github.copilot.client.model.QuickAction
+import com.ssfdre38.cpcli.android.client.databinding.ItemQuickActionBinding
+import com.ssfdre38.cpcli.android.client.model.QuickAction
 
 class QuickActionAdapter(
     private val onActionClick: (QuickAction) -> Unit

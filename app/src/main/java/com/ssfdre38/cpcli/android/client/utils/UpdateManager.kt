@@ -1,10 +1,10 @@
-package com.github.copilot.client.utils
+package com.ssfdre38.cpcli.android.client.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.github.copilot.client.model.UpdateInfo
+import com.ssfdre38.cpcli.android.client.model.UpdateInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject

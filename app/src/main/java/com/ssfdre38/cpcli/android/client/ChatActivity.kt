@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -12,16 +12,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.copilot.client.databinding.ActivityChatBinding
-import com.github.copilot.client.model.ChatMessage
-import com.github.copilot.client.model.MessageSender
-import com.github.copilot.client.model.QuickAction
-import com.github.copilot.client.model.QuickActionTemplates
-import com.github.copilot.client.network.CopilotWebSocketClient
-import com.github.copilot.client.ui.ChatAdapter
-import com.github.copilot.client.ui.QuickActionAdapter
-import com.github.copilot.client.utils.StorageManager
-import com.github.copilot.client.utils.ThemeManager
+import com.ssfdre38.cpcli.android.client.databinding.ActivityChatBinding
+import com.ssfdre38.cpcli.android.client.model.ChatMessage
+import com.ssfdre38.cpcli.android.client.model.MessageSender
+import com.ssfdre38.cpcli.android.client.model.QuickAction
+import com.ssfdre38.cpcli.android.client.model.QuickActionTemplates
+import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
+import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import com.ssfdre38.cpcli.android.client.ui.QuickActionAdapter
+import com.ssfdre38.cpcli.android.client.utils.StorageManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -314,7 +314,7 @@ class ChatActivity : AppCompatActivity() {
         }
     }
     
-    private fun handleCopilotResponse(response: com.github.copilot.client.model.CopilotResponse) {
+    private fun handleCopilotResponse(response: com.ssfdre38.cpcli.android.client.model.CopilotResponse) {
         // Remove typing indicator
         removeTypingIndicator()
         

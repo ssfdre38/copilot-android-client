@@ -1,7 +1,7 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.app.Application
-import com.github.copilot.client.utils.ThemeManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class CopilotApplication : Application() {
     

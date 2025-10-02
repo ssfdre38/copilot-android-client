@@ -1,4 +1,4 @@
-package com.github.copilot.client.network
+package com.ssfdre38.cpcli.android.client.network
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

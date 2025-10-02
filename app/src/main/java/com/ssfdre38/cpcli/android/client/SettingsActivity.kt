@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.github.copilot.client.utils.StorageManager
-import com.github.copilot.client.utils.ThemeManager
-import com.github.copilot.client.utils.UpdateManager
+import com.ssfdre38.cpcli.android.client.utils.StorageManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
+import com.ssfdre38.cpcli.android.client.utils.UpdateManager
 import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
@@ -112,7 +112,8 @@ class SettingsActivity : AppCompatActivity() {
             findPreference<Preference>("about")?.apply {
                 summary = "Version ${updateManager.getAppVersion()}"
                 setOnPreferenceClickListener {
-                    showAboutDialog()
+                    val intent = Intent(requireContext(), AboutActivity::class.java)
+                    startActivity(intent)
                     true
                 }
             }
@@ -145,7 +146,7 @@ class SettingsActivity : AppCompatActivity() {
                 .show()
         }
         
-        private fun showUpdateDialog(updateInfo: com.github.copilot.client.model.UpdateInfo) {
+        private fun showUpdateDialog(updateInfo: com.ssfdre38.cpcli.android.client.model.UpdateInfo) {
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Update Available")
                 .setMessage("Version ${updateInfo.version} is available.\n\n${updateInfo.releaseNotes}")
@@ -164,28 +165,6 @@ class SettingsActivity : AppCompatActivity() {
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("No Updates")
                 .setMessage("You are running the latest version.")
-                .setPositiveButton("OK", null)
-                .show()
-        }
-        
-        private fun showAboutDialog() {
-            androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("About Copilot Android Client")
-                .setMessage("""
-                    Version: ${updateManager.getAppVersion()}
-                    
-                    A complete Android application that connects mobile devices to a GitHub Copilot CLI server via WebSocket.
-                    
-                    Features:
-                    • Real-time chat with Copilot
-                    • Multi-server support
-                    • Dark mode
-                    • Chat history
-                    • Auto-updates
-                    • Offline help & documentation
-                    
-                    Built with ❤️ for developers
-                """.trimIndent())
                 .setPositiveButton("OK", null)
                 .show()
         }

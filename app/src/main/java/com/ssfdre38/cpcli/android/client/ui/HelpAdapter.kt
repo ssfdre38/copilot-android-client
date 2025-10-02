@@ -1,12 +1,12 @@
-package com.github.copilot.client.ui
+package com.ssfdre38.cpcli.android.client.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.github.copilot.client.databinding.ItemHelpBinding
-import com.github.copilot.client.model.HelpItem
+import com.ssfdre38.cpcli.android.client.databinding.ItemHelpBinding
+import com.ssfdre38.cpcli.android.client.model.HelpItem
 
 class HelpAdapter(
     private val onItemClick: (HelpItem) -> Unit

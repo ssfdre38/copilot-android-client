@@ -1,4 +1,4 @@
-package com.github.copilot.client.model
+package com.ssfdre38.cpcli.android.client.model
 
 data class QuickAction(
     val id: String,

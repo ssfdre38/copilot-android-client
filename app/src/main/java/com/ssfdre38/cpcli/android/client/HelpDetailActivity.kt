@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.content.Context
 import android.content.Intent
@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.github.copilot.client.databinding.ActivityHelpDetailBinding
-import com.github.copilot.client.model.HelpItem
+import com.ssfdre38.cpcli.android.client.databinding.ActivityHelpDetailBinding
+import com.ssfdre38.cpcli.android.client.model.HelpItem
 import io.noties.markwon.Markwon
 
 class HelpDetailActivity : AppCompatActivity() {

@@ -1,6 +1,6 @@
-package com.github.copilot.client.utils
+package com.ssfdre38.cpcli.android.client.utils
 
-import com.github.copilot.client.model.HelpItem
+import com.ssfdre38.cpcli.android.client.model.HelpItem
 
 object HelpContentProvider {
     

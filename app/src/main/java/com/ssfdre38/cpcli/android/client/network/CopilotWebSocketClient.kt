@@ -1,8 +1,8 @@
-package com.github.copilot.client.network
+package com.ssfdre38.cpcli.android.client.network
 
 import android.util.Log
-import com.github.copilot.client.model.CopilotRequest
-import com.github.copilot.client.model.CopilotResponse
+import com.ssfdre38.cpcli.android.client.model.CopilotRequest
+import com.ssfdre38.cpcli.android.client.model.CopilotResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

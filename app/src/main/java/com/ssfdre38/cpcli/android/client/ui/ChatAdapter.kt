@@ -1,4 +1,4 @@
-package com.github.copilot.client.ui
+package com.ssfdre38.cpcli.android.client.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,10 +6,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.github.copilot.client.R
-import com.github.copilot.client.databinding.ItemChatMessageBinding
-import com.github.copilot.client.model.ChatMessage
-import com.github.copilot.client.model.MessageSender
+import com.ssfdre38.cpcli.android.client.R
+import com.ssfdre38.cpcli.android.client.databinding.ItemChatMessageBinding
+import com.ssfdre38.cpcli.android.client.model.ChatMessage
+import com.ssfdre38.cpcli.android.client.model.MessageSender
 import java.text.SimpleDateFormat
 import java.util.*
 

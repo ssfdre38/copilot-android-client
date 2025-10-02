@@ -1,4 +1,4 @@
-package com.github.copilot.client.model
+package com.ssfdre38.cpcli.android.client.model
 
 import java.util.Date
 

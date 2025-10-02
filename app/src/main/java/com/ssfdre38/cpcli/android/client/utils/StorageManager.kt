@@ -1,11 +1,11 @@
-package com.github.copilot.client.utils
+package com.ssfdre38.cpcli.android.client.utils
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.github.copilot.client.model.ChatMessage
-import com.github.copilot.client.model.ServerConfig
-import com.github.copilot.client.model.AppSettings
+import com.ssfdre38.cpcli.android.client.model.ChatMessage
+import com.ssfdre38.cpcli.android.client.model.ServerConfig
+import com.ssfdre38.cpcli.android.client.model.AppSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Date

@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace 'com.github.copilot.client'
+    namespace 'com.ssfdre38.cpcli.android.client'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.github.copilot.client"
+        applicationId "com.ssfdre38.cpcli.android.client"
         minSdk 31  // Android 12 (API 31) and up
         targetSdk 34
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

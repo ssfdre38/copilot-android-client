@@ -1,4 +1,4 @@
-package com.github.copilot.client.utils
+package com.ssfdre38.cpcli.android.client.utils
 
 import android.content.Context
 import android.content.res.Configuration

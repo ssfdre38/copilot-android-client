@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.os.Bundle
 import android.text.Editable
@@ -6,10 +6,10 @@ import android.text.TextWatcher
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.copilot.client.databinding.ActivityHelpBinding
-import com.github.copilot.client.model.HelpItem
-import com.github.copilot.client.ui.HelpAdapter
-import com.github.copilot.client.utils.HelpContentProvider
+import com.ssfdre38.cpcli.android.client.databinding.ActivityHelpBinding
+import com.ssfdre38.cpcli.android.client.model.HelpItem
+import com.ssfdre38.cpcli.android.client.ui.HelpAdapter
+import com.ssfdre38.cpcli.android.client.utils.HelpContentProvider
 
 class HelpActivity : AppCompatActivity() {
     

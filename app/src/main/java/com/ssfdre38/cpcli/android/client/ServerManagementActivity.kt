@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,10 +6,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.copilot.client.databinding.ActivityServerManagementBinding
-import com.github.copilot.client.model.ServerConfig
-import com.github.copilot.client.ui.ServerAdapter
-import com.github.copilot.client.utils.StorageManager
+import com.ssfdre38.cpcli.android.client.databinding.ActivityServerManagementBinding
+import com.ssfdre38.cpcli.android.client.model.ServerConfig
+import com.ssfdre38.cpcli.android.client.ui.ServerAdapter
+import com.ssfdre38.cpcli.android.client.utils.StorageManager
 import kotlinx.coroutines.launch
 import java.util.Date
 

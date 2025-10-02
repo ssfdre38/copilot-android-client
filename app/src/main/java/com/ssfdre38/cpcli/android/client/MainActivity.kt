@@ -1,4 +1,4 @@
-package com.github.copilot.client
+package com.ssfdre38.cpcli.android.client
 
 import android.content.Context
 import android.content.Intent
@@ -14,11 +14,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.github.copilot.client.databinding.ActivityMainBinding
-import com.github.copilot.client.model.ServerConfig
-import com.github.copilot.client.utils.StorageManager
-import com.github.copilot.client.utils.ThemeManager
-import com.github.copilot.client.utils.UpdateManager
+import com.ssfdre38.cpcli.android.client.databinding.ActivityMainBinding
+import com.ssfdre38.cpcli.android.client.model.ServerConfig
+import com.ssfdre38.cpcli.android.client.utils.StorageManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
+import com.ssfdre38.cpcli.android.client.utils.UpdateManager
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun showUpdateNotification(updateInfo: com.github.copilot.client.model.UpdateInfo) {
+    private fun showUpdateNotification(updateInfo: com.ssfdre38.cpcli.android.client.model.UpdateInfo) {
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Update Available")
             .setMessage("Version ${updateInfo.version} is available. Would you like to download it?")
