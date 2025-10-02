@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.ssfdre38.cpcli.android.client.databinding.ActivityMainBinding
 import com.ssfdre38.cpcli.android.client.model.ServerConfig
+import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
 import com.ssfdre38.cpcli.android.client.utils.StorageManager
 import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import com.ssfdre38.cpcli.android.client.utils.UpdateManager
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private var servers = mutableListOf<ServerConfig>()
     private var currentServer: ServerConfig? = null
     private var isConnected = false
+    private var webSocketClient: CopilotWebSocketClient? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager.applyTheme(this)
@@ -241,26 +243,67 @@ class MainActivity : AppCompatActivity() {
                     storageManager.saveServers(servers)
                 }
                 
-                // Simulate connection
-                kotlinx.coroutines.delay(2000)
+                // Create and connect WebSocket client
+                webSocketClient = CopilotWebSocketClient(server.url, server.apiKey)
                 
-                isConnected = true
-                binding.textViewStatus.text = "Connected to ${server.name} ✓"
-                binding.buttonConnect.text = "Disconnect"
-                binding.buttonChat.isEnabled = true
+                // Observe connection state in a separate coroutine
+                launch {
+                    webSocketClient?.connectionState?.collect { state ->
+                        runOnUiThread {
+                            when (state) {
+                                CopilotWebSocketClient.ConnectionState.CONNECTING -> {
+                                    binding.textViewStatus.text = "Connecting to ${server.name}..."
+                                }
+                                CopilotWebSocketClient.ConnectionState.CONNECTED -> {
+                                    isConnected = true
+                                    binding.textViewStatus.text = "Connected to ${server.name} ✓"
+                                    binding.buttonConnect.text = "Disconnect"
+                                    binding.buttonChat.isEnabled = true
+                                    
+                                    // Set the global WebSocket client for ChatActivity
+                                    ChatActivity.webSocketClient = webSocketClient
+                                    
+                                    Toast.makeText(this@MainActivity, "Connected successfully!", Toast.LENGTH_SHORT).show()
+                                    binding.buttonConnect.isEnabled = true
+                                }
+                                CopilotWebSocketClient.ConnectionState.ERROR -> {
+                                    binding.textViewStatus.text = "Connection failed"
+                                    isConnected = false
+                                    binding.buttonConnect.text = "Connect"
+                                    binding.buttonChat.isEnabled = false
+                                    binding.buttonConnect.isEnabled = true
+                                    
+                                    webSocketClient?.errors?.value?.let { error ->
+                                        Toast.makeText(this@MainActivity, "Connection failed: $error", Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                                CopilotWebSocketClient.ConnectionState.DISCONNECTED -> {
+                                    isConnected = false
+                                    binding.textViewStatus.text = "Disconnected"
+                                    binding.buttonConnect.text = "Connect"
+                                    binding.buttonChat.isEnabled = false
+                                    binding.buttonConnect.isEnabled = true
+                                }
+                            }
+                        }
+                    }
+                }
                 
-                Toast.makeText(this@MainActivity, "Connected successfully!", Toast.LENGTH_SHORT).show()
+                // Start the connection
+                webSocketClient?.connect()
                 
             } catch (e: Exception) {
                 binding.textViewStatus.text = "Connection failed: ${e.message}"
                 Toast.makeText(this@MainActivity, "Connection failed: ${e.message}", Toast.LENGTH_LONG).show()
-            } finally {
                 binding.buttonConnect.isEnabled = true
             }
         }
     }
     
     private fun disconnectFromServer() {
+        webSocketClient?.disconnect()
+        webSocketClient = null
+        ChatActivity.webSocketClient = null
         isConnected = false
         
         binding.textViewStatus.text = "Disconnected"

@@ -288,7 +288,13 @@ This application is not affiliated with, endorsed by, or sponsored by Microsoft 
 
 ## 🔄 Version History
 
-### v1.1.0 (Current)
+### v1.1.1 (Current)
+- **🐛 Critical Bug Fix**: Fixed app crash when pressing "Start Chat" button
+- **🔗 WebSocket Connection**: Resolved WebSocket connection issues preventing chat functionality
+- **⚡ Performance**: Removed blocking WebSocket connection calls that caused ANR crashes
+- **🔧 Stability**: Improved connection state management and error handling
+
+### v1.1.0
 - **Package Compliance**: Changed to `com.ssfdre38.cpcli.android.client` to avoid trademark issues
 - **Legal Compliance**: Added comprehensive About page with trademark attributions
 - **Enhanced UI**: Improved About section with license display and external links

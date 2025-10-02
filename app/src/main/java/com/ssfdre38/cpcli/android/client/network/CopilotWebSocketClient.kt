@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
-import java.util.concurrent.TimeUnit
 
 class CopilotWebSocketClient(private val serverUrl: String, private val apiKey: String? = null) {
     
@@ -78,7 +77,8 @@ class CopilotWebSocketClient(private val serverUrl: String, private val apiKey: 
                 }
             }
             
-            webSocketClient?.connectBlocking(30, TimeUnit.SECONDS)
+            // Use non-blocking connect instead of connectBlocking
+            webSocketClient?.connect()
             
         } catch (e: Exception) {
             Log.e(TAG, "Failed to connect", e)
