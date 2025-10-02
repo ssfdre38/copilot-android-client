@@ -1,6 +1,6 @@
 {
-  "name": "copilot-cli-server",
-  "version": "1.0.0",
+  "name": "cpcli-android-server",
+  "version": "1.1.0",
   "description": "WebSocket server to interface with GitHub Copilot CLI for Android clients",
   "main": "server.js",
   "scripts": {
@@ -15,7 +15,15 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["copilot", "cli", "websocket", "android"],
-  "author": "GitHub Copilot Team",
-  "license": "MIT"
+  "keywords": ["copilot", "cli", "websocket", "android", "cpcli"],
+  "author": "ssfdre38",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ssfdre38/copilot-android-client.git"
+  },
+  "homepage": "https://github.com/ssfdre38/copilot-android-client",
+  "bugs": {
+    "url": "https://github.com/ssfdre38/copilot-android-client/issues"
+  }
 }

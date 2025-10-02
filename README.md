@@ -180,16 +180,18 @@ adb logcat | grep CopilotClient
 ## 🔮 Feature Status & Roadmap
 
 ### ✅ Implemented Features
-- [x] **Multi-server Support**: Connect to multiple Copilot instances
+- [x] **Multi-server Support**: Connect to multiple Copilot instances with easy switching
 - [x] **Dark Mode**: Complete theme customization with system auto-detection
-- [x] **Chat History**: Persistent conversation storage per server
-- [x] **Auto-updates**: Automatic update checking and download
-- [x] **Offline Help**: Complete documentation and troubleshooting guide
-- [x] **Server Management**: Add, edit, delete, and organize servers
-- [x] **Quick Actions**: Common keystroke buttons for terminal operations
-- [x] **Real-time Communication**: WebSocket-based instant messaging
+- [x] **Chat History**: Persistent conversation storage per server (configurable limits 100-5000 messages)
+- [x] **Auto-updates**: Automatic update checking and download with version comparison
+- [x] **Offline Help**: Complete documentation and troubleshooting guide with search
+- [x] **Server Management**: Add, edit, delete, and organize servers with import/export
+- [x] **Quick Actions**: Common keystroke buttons for terminal operations (Ctrl+C, Tab, etc.)
+- [x] **Real-time Communication**: WebSocket-based instant messaging with auto-reconnection
 - [x] **Network Scanning**: Auto-discover servers on local network
 - [x] **Settings Management**: Comprehensive configuration options
+- [x] **Legal Compliance**: Proper trademark attributions and About page
+- [x] **Package Compliance**: Non-infringing package naming (com.ssfdre38.cpcli.android.client)
 
 ### 🚧 In Progress
 - [ ] **File Upload/Download**: Share code files with Copilot
@@ -197,12 +199,16 @@ adb logcat | grep CopilotClient
 - [ ] **Syntax Highlighting**: Code display with proper formatting
 
 ### 📋 Planned Features
-- [ ] **Multi-language**: Internationalization support
+- [ ] **Multi-language**: Internationalization support (i18n)
 - [ ] **Push Notifications**: Background response alerts
 - [ ] **Message Encryption**: End-to-end security
 - [ ] **Offline Mode**: Cache responses for offline viewing
 - [ ] **Performance**: Optimize for low-bandwidth networks
-- [ ] **Analytics**: Usage tracking and insights
+- [ ] **Analytics**: Usage tracking and insights (privacy-focused)
+- [ ] **Plugin System**: Extensible architecture for custom features
+- [ ] **Tablet UI**: Optimized interface for larger screens
+- [ ] **Keyboard Shortcuts**: Hardware keyboard support
+- [ ] **Custom Themes**: User-defined color schemes
 
 ### 🎯 Key Features Overview
 
@@ -268,9 +274,41 @@ cd copilot-android-client
 cd server && npm run dev
 ```
 
-## 📄 License
+## 📄 License & Legal
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Trademark Notices
+- **GitHub®** is a registered trademark of Microsoft Corporation
+- **Copilot™** is a trademark of Microsoft Corporation  
+- **Android™** is a trademark of Google LLC
+- **Material Design™** is a trademark of Google LLC
+
+This application is not affiliated with, endorsed by, or sponsored by Microsoft Corporation, GitHub, Inc., or Google LLC. All trademarks and registered trademarks are the property of their respective owners.
+
+## 🔄 Version History
+
+### v1.1.0 (Current)
+- **Package Compliance**: Changed to `com.ssfdre38.cpcli.android.client` to avoid trademark issues
+- **Legal Compliance**: Added comprehensive About page with trademark attributions
+- **Enhanced UI**: Improved About section with license display and external links
+- **Version Management**: Automated version tracking and release management
+
+### v1.0.2
+- Multi-server support enhancements
+- Dark mode improvements
+- Chat history optimizations
+
+### v1.0.1
+- Initial feature-complete release
+- Core functionality implementation
+
+## 🆔 App Information
+
+- **Package Name**: `com.ssfdre38.cpcli.android.client`
+- **Minimum Android**: API 31 (Android 12)
+- **Target Android**: API 34 (Android 14)
+- **Architecture**: ARM64, ARM, x86_64
 
 ## 🙏 Acknowledgments
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=Copilot CLI WebSocket Server
+Description=CP CLI Android WebSocket Server
 Documentation=https://github.com/ssfdre38/copilot-android-client
 After=network.target
 
@@ -17,10 +17,14 @@ Environment=PORT=3002
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=copilot-server
+SyslogIdentifier=cpcli-server
 
 # Security
 NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ubuntu/CopilotAndroidClient/server
 
 [Install]
 WantedBy=multi-user.target

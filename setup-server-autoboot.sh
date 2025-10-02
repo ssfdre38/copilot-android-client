@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🚀 Setting up Copilot CLI Server with Auto-boot"
-echo "==============================================="
+echo "🚀 Setting up CP CLI Android Server with Auto-boot"
+echo "================================================="
 
 # Check if running as root for systemctl operations
 if [ "$EUID" -eq 0 ]; then
@@ -59,6 +59,10 @@ echo "4. Setting up systemctl service..."
 # Update service file with correct paths
 sed -i "s|WorkingDirectory=.*|WorkingDirectory=$SERVER_DIR|g" server/copilot-server.service
 sed -i "s|ReadWritePaths=.*|ReadWritePaths=$SERVER_DIR|g" server/copilot-server.service
+sed -i "s|ExecStart=.*|ExecStart=/usr/bin/node $SERVER_DIR/server.js|g" server/copilot-server.service
+
+# Stop any existing service
+sudo systemctl stop copilot-server.service 2>/dev/null || true
 
 # Copy service file to systemd
 sudo cp server/copilot-server.service /etc/systemd/system/
@@ -90,14 +94,22 @@ else
     exit 1
 fi
 
+# Get server IP
+SERVER_IP=$(hostname -I | awk '{print $1}')
+
 echo ""
 echo "🎉 Setup Complete!"
 echo "=================="
 echo ""
-echo "✅ Copilot CLI Server is now running and will auto-start on boot"
+echo "✅ CP CLI Android Server is now running and will auto-start on boot"
 echo "✅ Service status: $(sudo systemctl is-active copilot-server.service)"
 echo "✅ Server URL: http://localhost:3002"
-echo "✅ WebSocket URL: ws://$(hostname -I | awk '{print $1}'):3002"
+echo "✅ WebSocket URL: ws://$SERVER_IP:3002"
+echo ""
+echo "📱 Android App Configuration:"
+echo "   Server IP: $SERVER_IP"
+echo "   Port: 3002"
+echo "   URL: ws://$SERVER_IP:3002"
 echo ""
 echo "📋 Service Management Commands:"
 echo "   sudo systemctl status copilot-server    # Check status"
@@ -107,3 +119,4 @@ echo "   sudo systemctl restart copilot-server   # Restart service"
 echo "   sudo journalctl -u copilot-server -f    # View logs"
 echo ""
 echo "🔥 Your server is ready for Android client connections!"
+echo "📲 Download the Android app from: https://github.com/ssfdre38/copilot-android-client/releases"
