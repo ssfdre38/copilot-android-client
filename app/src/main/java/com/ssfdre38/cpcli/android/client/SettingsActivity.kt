@@ -1,372 +1,364 @@
 package com.ssfdre38.cpcli.android.client
 
-import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.View
+import android.widget.*
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.materialswitch.MaterialSwitch
+import androidx.core.view.setPadding
 import com.ssfdre38.cpcli.android.client.data.StorageManager
-import com.ssfdre38.cpcli.android.client.data.ImportExportManager
-import com.ssfdre38.cpcli.android.client.data.ImportResult
-import com.ssfdre38.cpcli.android.client.data.ValidationResult
-import com.ssfdre38.cpcli.android.client.service.UpdateManager
-import com.ssfdre38.cpcli.android.client.service.NotificationService
-import com.ssfdre38.cpcli.android.client.ui.SearchActivity
-import kotlinx.coroutines.*
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var switchDarkMode: MaterialSwitch
-    private lateinit var switchAutoUpdates: MaterialSwitch
-    private lateinit var switchNotifications: MaterialSwitch
-    private lateinit var buttonServerManagement: MaterialButton
-    private lateinit var buttonChatHistory: MaterialButton
-    private lateinit var buttonSearchHistory: MaterialButton
-    private lateinit var buttonImportData: MaterialButton
-    private lateinit var buttonExportData: MaterialButton
-    private lateinit var buttonHelp: MaterialButton
-    private lateinit var buttonAbout: MaterialButton
-    private lateinit var buttonCheckUpdates: MaterialButton
-    private lateinit var buttonClearAllData: MaterialButton
-    
     private lateinit var storageManager: StorageManager
-    private lateinit var importExportManager: ImportExportManager
-    private lateinit var updateManager: UpdateManager
-    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    
-    // Activity result launchers
-    private val exportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-        uri?.let { exportData(it) }
-    }
-    
-    private val importLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri?.let { importData(it) }
-    }
+    private var isDarkMode = false
+    private var autoUpdates = true
+    private var notificationsEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-
-        storageManager = StorageManager(this)
-        importExportManager = ImportExportManager(this)
-        updateManager = UpdateManager(this)
         
-        initViews()
-        setupListeners()
-        loadSettings()
-        setupUpdateManager()
-        
-        // Set up toolbar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Settings"
-    }
-
-    private fun initViews() {
-        switchDarkMode = findViewById(R.id.switchDarkMode)
-        switchAutoUpdates = findViewById(R.id.switchAutoUpdates)
-        switchNotifications = findViewById(R.id.switchNotifications)
-        buttonServerManagement = findViewById(R.id.buttonServerManagement)
-        buttonChatHistory = findViewById(R.id.buttonChatHistory)
-        buttonSearchHistory = findViewById(R.id.buttonSearchHistory)
-        buttonImportData = findViewById(R.id.buttonImportData)
-        buttonExportData = findViewById(R.id.buttonExportData)
-        buttonHelp = findViewById(R.id.buttonHelp)
-        buttonAbout = findViewById(R.id.buttonAbout)
-        buttonCheckUpdates = findViewById(R.id.buttonCheckUpdates)
-        buttonClearAllData = findViewById(R.id.buttonClearAllData)
+        try {
+            storageManager = StorageManager(this)
+            
+            // Load current settings
+            loadSettings()
+            
+            // Create dynamic responsive layout
+            createDynamicLayout()
+            
+            title = "Settings"
+            
+            Toast.makeText(this, "✅ Settings loaded with dynamic layout!", Toast.LENGTH_SHORT).show()
+            
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error loading settings: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
     
     private fun loadSettings() {
-        val settings = storageManager.getAppSettings()
-        switchDarkMode.isChecked = settings.isDarkMode
-        switchAutoUpdates.isChecked = settings.autoCheckUpdates
-        switchNotifications.isChecked = getNotificationPreference()
-    }
-    
-    private fun getNotificationPreference(): Boolean {
-        val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
-        return prefs.getBoolean("notifications_enabled", true)
-    }
-    
-    private fun setNotificationPreference(enabled: Boolean) {
-        val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
-        prefs.edit().putBoolean("notifications_enabled", enabled).apply()
-    }
-
-    private fun setupListeners() {
-        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            storageManager.setDarkMode(isChecked)
-            applyTheme(isChecked)
-            Toast.makeText(this, if (isChecked) "Dark mode enabled" else "Light mode enabled", Toast.LENGTH_SHORT).show()
-        }
-        
-        switchAutoUpdates.setOnCheckedChangeListener { _, isChecked ->
-            storageManager.setAutoUpdates(isChecked)
-            updateManager.setAutoUpdateEnabled(isChecked)
-            Toast.makeText(this, if (isChecked) "Auto-updates enabled" else "Auto-updates disabled", Toast.LENGTH_SHORT).show()
-        }
-        
-        switchNotifications.setOnCheckedChangeListener { _, isChecked ->
-            setNotificationPreference(isChecked)
-            if (isChecked) {
-                NotificationService.startService(this)
-                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show()
-            } else {
-                NotificationService.stopService(this)
-                Toast.makeText(this, "Notifications disabled", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        buttonServerManagement.setOnClickListener {
-            val intent = Intent(this, ServerManagementActivity::class.java)
-            startActivity(intent)
-        }
-        
-        buttonChatHistory.setOnClickListener {
-            val intent = Intent(this, ChatHistoryActivity::class.java)
-            startActivity(intent)
-        }
-        
-        buttonSearchHistory.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent)
-        }
-        
-        buttonImportData.setOnClickListener {
-            importLauncher.launch(arrayOf("application/json", "*/*"))
-        }
-        
-        buttonExportData.setOnClickListener {
-            val filename = importExportManager.generateExportFilename()
-            exportLauncher.launch(filename)
-        }
-
-        buttonHelp.setOnClickListener {
-            val intent = Intent(this, HelpActivity::class.java)
-            startActivity(intent)
-        }
-
-        buttonAbout.setOnClickListener {
-            val intent = Intent(this, AboutActivity::class.java)
-            startActivity(intent)
-        }
-        
-        buttonCheckUpdates.setOnClickListener {
-            checkForUpdates()
-        }
-        
-        buttonClearAllData.setOnClickListener {
-            showClearDataConfirmation()
-        }
-    }
-    
-    private fun applyTheme(isDarkMode: Boolean) {
-        val mode = if (isDarkMode) {
-            AppCompatDelegate.MODE_NIGHT_YES
-        } else {
-            AppCompatDelegate.MODE_NIGHT_NO
-        }
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
-    
-    private fun checkForUpdates() {
-        scope.launch {
-            try {
-                buttonCheckUpdates.text = "Checking..."
-                buttonCheckUpdates.isEnabled = false
-                
-                val updateAvailable = updateManager.checkForUpdates()
-                updateManager.saveLastUpdateCheck()
-                
-                if (!updateAvailable) {
-                    Toast.makeText(this@SettingsActivity, "You're running the latest version!", Toast.LENGTH_SHORT).show()
-                }
-                
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Failed to check for updates: ${e.message}", Toast.LENGTH_LONG).show()
-            } finally {
-                buttonCheckUpdates.text = "Check for Updates"
-                buttonCheckUpdates.isEnabled = true
-            }
-        }
-    }
-    
-    private fun setupUpdateManager() {
-        updateManager.setUpdateListener(object : UpdateManager.UpdateListener {
-            override fun onUpdateAvailable(releaseInfo: com.ssfdre38.cpcli.android.client.service.ReleaseInfo) {
-                showUpdateDialog(releaseInfo)
-            }
-            
-            override fun onUpdateNotAvailable() {
-                // Already handled in checkForUpdates()
-            }
-            
-            override fun onUpdateError(error: String) {
-                Toast.makeText(this@SettingsActivity, "Update check failed: $error", Toast.LENGTH_LONG).show()
-            }
-            
-            override fun onDownloadProgress(progress: Int) {
-                runOnUiThread {
-                    buttonCheckUpdates.text = "Downloading... $progress%"
-                }
-            }
-            
-            override fun onDownloadComplete(file: java.io.File) {
-                runOnUiThread {
-                    buttonCheckUpdates.text = "Check for Updates"
-                    buttonCheckUpdates.isEnabled = true
-                    
-                    androidx.appcompat.app.AlertDialog.Builder(this@SettingsActivity)
-                        .setTitle("Update Downloaded")
-                        .setMessage("The update has been downloaded. Do you want to install it now?")
-                        .setPositiveButton("Install") { _, _ ->
-                            updateManager.installUpdate(file)
-                        }
-                        .setNegativeButton("Later", null)
-                        .show()
-                }
-            }
-            
-            override fun onDownloadError(error: String) {
-                runOnUiThread {
-                    buttonCheckUpdates.text = "Check for Updates"
-                    buttonCheckUpdates.isEnabled = true
-                    Toast.makeText(this@SettingsActivity, "Download failed: $error", Toast.LENGTH_LONG).show()
-                }
-            }
-        })
-    }
-    
-    private fun showUpdateDialog(releaseInfo: com.ssfdre38.cpcli.android.client.service.ReleaseInfo) {
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Update Available")
-            .setMessage("Version ${releaseInfo.tag_name} is available!\n\n${releaseInfo.body}")
-            .setPositiveButton("Download") { _, _ ->
-                scope.launch {
-                    buttonCheckUpdates.text = "Downloading..."
-                    buttonCheckUpdates.isEnabled = false
-                    updateManager.downloadUpdate(releaseInfo)
-                }
-            }
-            .setNegativeButton("Later", null)
-            .show()
-    }
-    
-    private fun exportData(uri: Uri) {
-        scope.launch {
-            try {
-                val success = importExportManager.exportToFile(uri, includeHistory = true)
-                if (success) {
-                    Toast.makeText(this@SettingsActivity, "Data exported successfully", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this@SettingsActivity, "Export failed", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Export error: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-    
-    private fun importData(uri: Uri) {
-        scope.launch {
-            try {
-                // First validate the file
-                when (val validation = importExportManager.validateImportFile(uri)) {
-                    is ValidationResult.Valid -> {
-                        showImportConfirmationDialog(uri, validation)
-                    }
-                    is ValidationResult.Invalid -> {
-                        Toast.makeText(this@SettingsActivity, "Invalid file: ${validation.message}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Import error: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-    
-    private fun showImportConfirmationDialog(uri: Uri, validation: ValidationResult.Valid) {
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Import Data")
-            .setMessage("Import ${validation.serverCount} servers and ${validation.historyCount} chat messages?\n\nExport date: ${validation.exportDate}\nApp version: ${validation.appVersion}")
-            .setPositiveButton("Import") { _, _ ->
-                performImport(uri)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-    
-    private fun performImport(uri: Uri) {
-        scope.launch {
-            try {
-                when (val result = importExportManager.importFromFile(uri)) {
-                    is ImportResult.Success -> {
-                        val message = "Imported: ${result.serversImported} servers, ${result.historyImported} messages"
-                        if (result.serversSkipped > 0) {
-                            Toast.makeText(this@SettingsActivity, "$message\n${result.serversSkipped} servers skipped (already exist)", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    is ImportResult.Error -> {
-                        Toast.makeText(this@SettingsActivity, "Import failed: ${result.message}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Import error: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-    
-    private fun showClearDataConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Clear All Data")
-            .setMessage("This will delete all chat history, server configurations, and settings. This action cannot be undone.")
-            .setPositiveButton("Clear All") { _, _ ->
-                clearAllData()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-    
-    private fun clearAllData() {
         try {
-            // Clear all stored data
-            storageManager.clearAllChatHistory()
+            val settings = storageManager.getAppSettings()
+            isDarkMode = settings.isDarkMode
+            autoUpdates = settings.autoCheckUpdates
             
-            // Reset to default settings
-            storageManager.saveAppSettings(com.ssfdre38.cpcli.android.client.data.AppSettings())
-            
-            // Clear servers except default
-            val servers = storageManager.getAllServers()
-            servers.forEach { server ->
-                if (server.id != "default") {
-                    storageManager.deleteServer(server.id)
-                }
-            }
-            
-            Toast.makeText(this, "All data cleared successfully", Toast.LENGTH_SHORT).show()
-            
-            // Restart activity to reflect changes
-            recreate()
-            
+            val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
+            notificationsEnabled = prefs.getBoolean("notifications_enabled", true)
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to clear data: ${e.message}", Toast.LENGTH_LONG).show()
+            // Use defaults if loading fails
+            isDarkMode = false
+            autoUpdates = true
+            notificationsEnabled = true
         }
     }
     
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
+    private fun createDynamicLayout() {
+        // Main container - automatically adapts to screen size
+        val mainLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(16))
+        }
+        
+        // Title header that scales with screen
+        val titleText = TextView(this).apply {
+            text = "⚙️ Settings"
+            textSize = calculateTextSize(24f)
+            gravity = Gravity.CENTER
+            setPadding(dpToPx(16))
+        }
+        
+        // Scrollable content area - responsive to screen height
+        val scrollView = ScrollView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f // Take remaining space
+            )
+        }
+        
+        val contentLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(8))
+        }
+        
+        // Create responsive sections
+        contentLayout.addView(createAppearanceSection())
+        contentLayout.addView(createSpacing())
+        contentLayout.addView(createSystemSection())
+        contentLayout.addView(createSpacing())
+        contentLayout.addView(createActionButtons())
+        
+        scrollView.addView(contentLayout)
+        
+        mainLayout.addView(titleText)
+        mainLayout.addView(scrollView)
+        
+        setContentView(mainLayout)
     }
     
-    override fun onDestroy() {
-        super.onDestroy()
-        scope.cancel()
+    private fun createAppearanceSection(): View {
+        val section = createSection("🎨 Appearance")
+        
+        // Dark mode toggle
+        val darkModeRow = createToggleRow(
+            "🌙 Dark Mode",
+            "Switch between light and dark themes",
+            isDarkMode
+        ) { enabled ->
+            isDarkMode = enabled
+            saveSettings()
+            Toast.makeText(this, if (enabled) "Dark mode enabled" else "Light mode enabled", Toast.LENGTH_SHORT).show()
+        }
+        
+        // Auto updates toggle  
+        val updatesRow = createToggleRow(
+            "🔄 Auto Updates",
+            "Automatically check for app updates",
+            autoUpdates
+        ) { enabled ->
+            autoUpdates = enabled
+            saveSettings()
+            Toast.makeText(this, if (enabled) "Auto updates enabled" else "Auto updates disabled", Toast.LENGTH_SHORT).show()
+        }
+        
+        section.addView(darkModeRow)
+        section.addView(createDivider())
+        section.addView(updatesRow)
+        
+        return section
+    }
+    
+    private fun createSystemSection(): View {
+        val section = createSection("🔧 System")
+        
+        val notificationRow = createToggleRow(
+            "🔔 Notifications",
+            "Enable app notifications",
+            notificationsEnabled
+        ) { enabled ->
+            notificationsEnabled = enabled
+            val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
+            prefs.edit().putBoolean("notifications_enabled", enabled).apply()
+            Toast.makeText(this, if (enabled) "Notifications enabled" else "Notifications disabled", Toast.LENGTH_SHORT).show()
+        }
+        
+        val helpButton = createButtonRow("❓ Help & Support", "Get help using the app") {
+            Toast.makeText(this, "Help coming soon - check GitHub for documentation", Toast.LENGTH_SHORT).show()
+        }
+        
+        val aboutButton = createButtonRow("ℹ️ About", "About this app") {
+            Toast.makeText(this, "Copilot Android Client v2.1.0 - Dynamic Layout Edition", Toast.LENGTH_LONG).show()
+        }
+        
+        section.addView(notificationRow)
+        section.addView(createDivider())
+        section.addView(helpButton)
+        section.addView(createDivider())
+        section.addView(aboutButton)
+        
+        return section
+    }
+    
+    private fun createActionButtons(): View {
+        val section = createSection("⚡ Actions")
+        
+        val clearDataButton = createButtonRow("🗑️ Clear All Data", "Reset app to defaults", true) {
+            clearData()
+        }
+        
+        val backButton = createButtonRow("← Back to Main", "Return to main screen") {
+            finish()
+        }
+        
+        section.addView(clearDataButton)
+        section.addView(createDivider())
+        section.addView(backButton)
+        
+        return section
+    }
+    
+    private fun createSection(title: String): LinearLayout {
+        val section = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = createCardBackground()
+            setPadding(dpToPx(16))
+        }
+        
+        val titleView = TextView(this).apply {
+            text = title
+            textSize = calculateTextSize(18f)
+            setPadding(0, 0, 0, dpToPx(8))
+        }
+        
+        section.addView(titleView)
+        return section
+    }
+    
+    private fun createToggleRow(title: String, description: String, checked: Boolean, onToggle: (Boolean) -> Unit): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dpToPx(8), 0, dpToPx(8))
+        }
+        
+        val textContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        
+        val titleView = TextView(this).apply {
+            text = title
+            textSize = calculateTextSize(16f)
+        }
+        
+        val descView = TextView(this).apply {
+            text = description
+            textSize = calculateTextSize(12f)
+            alpha = 0.7f
+        }
+        
+        val switch = Switch(this).apply {
+            isChecked = checked
+            setOnCheckedChangeListener { _, isChecked -> onToggle(isChecked) }
+        }
+        
+        textContainer.addView(titleView)
+        textContainer.addView(descView)
+        
+        row.addView(textContainer)
+        row.addView(switch)
+        
+        return row
+    }
+    
+    private fun createButtonRow(title: String, description: String, isDangerous: Boolean = false, onClick: () -> Unit): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dpToPx(12), 0, dpToPx(12))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { onClick() }
+            background = createButtonBackground()
+        }
+        
+        val textContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        
+        val titleView = TextView(this).apply {
+            text = title
+            textSize = calculateTextSize(16f)
+            if (isDangerous) setTextColor(0xFFE53E3E.toInt())
+        }
+        
+        val descView = TextView(this).apply {
+            text = description
+            textSize = calculateTextSize(12f)
+            alpha = 0.7f
+        }
+        
+        val arrow = TextView(this).apply {
+            text = "→"
+            textSize = calculateTextSize(18f)
+        }
+        
+        textContainer.addView(titleView)
+        textContainer.addView(descView)
+        
+        row.addView(textContainer)
+        row.addView(arrow)
+        
+        return row
+    }
+    
+    private fun createDivider(): View {
+        return View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dpToPx(1)
+            ).apply {
+                setMargins(0, dpToPx(4), 0, dpToPx(4))
+            }
+            setBackgroundColor(0x1F000000)
+        }
+    }
+    
+    private fun createSpacing(): View {
+        return View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dpToPx(16)
+            )
+        }
+    }
+    
+    private fun createCardBackground(): android.graphics.drawable.Drawable {
+        val drawable = android.graphics.drawable.GradientDrawable()
+        drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        drawable.cornerRadius = dpToPx(8).toFloat()
+        drawable.setColor(0x08000000)
+        drawable.setStroke(dpToPx(1), 0x1F000000)
+        return drawable
+    }
+    
+    private fun createButtonBackground(): android.graphics.drawable.Drawable {
+        val drawable = android.graphics.drawable.GradientDrawable()
+        drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        drawable.cornerRadius = dpToPx(4).toFloat()
+        drawable.setColor(0x05000000)
+        return drawable
+    }
+    
+    // Responsive text sizing based on screen density and size
+    private fun calculateTextSize(baseSizeSp: Float): Float {
+        val screenWidthDp = resources.displayMetrics.widthPixels / resources.displayMetrics.density
+        val scaleFactor = when {
+            screenWidthDp < 360 -> 0.85f // Small phones
+            screenWidthDp > 600 -> 1.15f // Tablets
+            else -> 1.0f // Normal phones
+        }
+        return baseSizeSp * scaleFactor
+    }
+    
+    // Convert dp to px for current screen density
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+    
+    private fun saveSettings() {
+        try {
+            val settings = storageManager.getAppSettings().copy(
+                isDarkMode = isDarkMode,
+                autoCheckUpdates = autoUpdates
+            )
+            storageManager.saveAppSettings(settings)
+            
+            // Apply theme change
+            if (isDarkMode) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error saving settings", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun clearData() {
+        try {
+            // Reset preferences
+            val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
+            prefs.edit().clear().apply()
+            
+            Toast.makeText(this, "All data cleared successfully", Toast.LENGTH_LONG).show()
+            
+            // Return to main activity
+            finish()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error clearing data: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 }
