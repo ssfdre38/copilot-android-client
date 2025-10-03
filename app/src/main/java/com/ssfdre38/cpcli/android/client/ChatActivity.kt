@@ -247,86 +247,172 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     }
     
     private fun sendMessage() {
-        val message = editTextMessage.text.toString().trim()
-        if (message.isNotBlank()) {
-            val chatMessage = ChatMessage(
-                id = UUID.randomUUID().toString(),
-                content = message,
-                isFromUser = true,
-                timestamp = System.currentTimeMillis(),
-                serverId = currentServerId
-            )
-            
-            // Add to UI
-            chatAdapter.addMessage(chatMessage)
-            scrollToBottom()
-            
-            // Save to storage
-            storageManager.saveChatMessage(chatMessage)
-            
-            // Send to server
-            webSocketClient?.sendMessage(message, currentSessionId)
-            
-            // Clear input
-            editTextMessage.text?.clear()
+        try {
+            val message = editTextMessage.text.toString().trim()
+            if (message.isNotBlank()) {
+                val chatMessage = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    content = message,
+                    isFromUser = true,
+                    timestamp = System.currentTimeMillis(),
+                    serverId = currentServerId
+                )
+                
+                // Add to UI safely
+                if (::chatAdapter.isInitialized) {
+                    chatAdapter.addMessage(chatMessage)
+                    scrollToBottom()
+                }
+                
+                // Save to storage safely
+                try {
+                    storageManager.saveChatMessage(chatMessage)
+                } catch (e: Exception) {
+                    android.util.Log.e("ChatActivity", "Error saving user message", e)
+                }
+                
+                // Send to server safely
+                try {
+                    webSocketClient?.sendMessage(message, currentSessionId)
+                } catch (e: Exception) {
+                    android.util.Log.e("ChatActivity", "Error sending message to server", e)
+                    Toast.makeText(this, "Failed to send message", Toast.LENGTH_SHORT).show()
+                }
+                
+                // Clear input safely
+                try {
+                    editTextMessage.text?.clear()
+                } catch (e: Exception) {
+                    android.util.Log.e("ChatActivity", "Error clearing input text", e)
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in sendMessage", e)
+            Toast.makeText(this, "Error sending message", Toast.LENGTH_SHORT).show()
         }
     }
     
     private fun sendCommand(command: String) {
-        webSocketClient?.sendCommand(command, currentSessionId)
+        try {
+            webSocketClient?.sendCommand(command, currentSessionId)
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error sending command: $command", e)
+        }
     }
     
     private fun scrollToBottom() {
-        recyclerViewMessages.scrollToPosition(chatAdapter.itemCount - 1)
+        try {
+            if (::chatAdapter.isInitialized && ::recyclerViewMessages.isInitialized) {
+                val itemCount = chatAdapter.itemCount
+                if (itemCount > 0) {
+                    recyclerViewMessages.scrollToPosition(itemCount - 1)
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error scrolling to bottom", e)
+        }
     }
     
     // WebSocket listener methods
     override fun onConnected() {
-        runOnUiThread {
-            Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT).show()
+        try {
+            if (!isFinishing && !isDestroyed) {
+                runOnUiThread {
+                    try {
+                        Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        android.util.Log.e("ChatActivity", "Error showing connected toast", e)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in onConnected", e)
         }
     }
     
     override fun onDisconnected() {
-        runOnUiThread {
-            Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+        try {
+            if (!isFinishing && !isDestroyed) {
+                runOnUiThread {
+                    try {
+                        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        android.util.Log.e("ChatActivity", "Error showing disconnected toast", e)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in onDisconnected", e)
         }
     }
     
     override fun onMessageReceived(message: WebSocketMessage) {
-        runOnUiThread {
-            when (message.type) {
-                "response", "welcome" -> {
-                    val chatMessage = ChatMessage(
-                        id = UUID.randomUUID().toString(),
-                        content = message.message ?: "Empty response",
-                        isFromUser = false,
-                        timestamp = System.currentTimeMillis(),
-                        serverId = currentServerId
-                    )
-                    
-                    // Add to UI
-                    chatAdapter.addMessage(chatMessage)
-                    scrollToBottom()
-                    
-                    // Save to storage
-                    storageManager.saveChatMessage(chatMessage)
-                }
-                "error" -> {
-                    Toast.makeText(this, "Server error: ${message.error}", Toast.LENGTH_LONG).show()
+        try {
+            if (!isFinishing && !isDestroyed) {
+                runOnUiThread {
+                    try {
+                        when (message.type) {
+                            "response", "welcome" -> {
+                                val chatMessage = ChatMessage(
+                                    id = UUID.randomUUID().toString(),
+                                    content = message.message ?: "Empty response",
+                                    isFromUser = false,
+                                    timestamp = System.currentTimeMillis(),
+                                    serverId = currentServerId
+                                )
+                                
+                                // Add to UI safely
+                                if (::chatAdapter.isInitialized) {
+                                    chatAdapter.addMessage(chatMessage)
+                                    scrollToBottom()
+                                }
+                                
+                                // Save to storage safely
+                                try {
+                                    storageManager.saveChatMessage(chatMessage)
+                                } catch (e: Exception) {
+                                    android.util.Log.e("ChatActivity", "Error saving message", e)
+                                }
+                            }
+                            "error" -> {
+                                Toast.makeText(this, "Server error: ${message.error}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("ChatActivity", "Error processing message in UI thread", e)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in onMessageReceived", e)
         }
     }
     
     override fun onError(error: String) {
-        runOnUiThread {
-            Toast.makeText(this, "Connection error: $error", Toast.LENGTH_LONG).show()
+        try {
+            if (!isFinishing && !isDestroyed) {
+                runOnUiThread {
+                    try {
+                        Toast.makeText(this, "Connection error: $error", Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        android.util.Log.e("ChatActivity", "Error showing error toast", e)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in onError", e)
         }
     }
     
     override fun onDestroy() {
-        super.onDestroy()
-        webSocketClient?.cleanup()
+        try {
+            android.util.Log.d("ChatActivity", "onDestroy called")
+            webSocketClient?.cleanup()
+            webSocketClient = null
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error in onDestroy", e)
+        } finally {
+            super.onDestroy()
+        }
     }
 }

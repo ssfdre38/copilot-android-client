@@ -38,10 +38,14 @@ class CopilotWebSocketClient(
                         scope.launch {
                             try {
                                 withContext(Dispatchers.Main) {
-                                    listener.onConnected()
+                                    try {
+                                        listener.onConnected()
+                                    } catch (e: Exception) {
+                                        android.util.Log.e("WebSocket", "Error in onConnected callback", e)
+                                    }
                                 }
                             } catch (e: Exception) {
-                                android.util.Log.e("WebSocket", "Error calling onConnected on Main thread", e)
+                                android.util.Log.e("WebSocket", "Error switching to Main dispatcher in onOpen", e)
                             }
                         }
                     } catch (e: Exception) {
