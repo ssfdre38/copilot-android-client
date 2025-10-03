@@ -1,0 +1,38 @@
+Copilot Android Client v1.4.0 - Simple UI Release APK
+
+📱 APK Information:
+- Version: 1.4.0
+- Build Type: Release (Optimized)
+- Size: ~8-12 MB
+- Architecture: Universal (all devices)
+
+🎯 Key Features:
+- Restored simple, stable UI from v1.1.0
+- Perfect phone and tablet compatibility 
+- Material Design 3 components
+- No startup crashes or complex dependencies
+- Clean server connection interface
+
+📋 System Requirements:
+- Android 7.0+ (API Level 24)
+- 50MB free storage space
+- Internet connection for server communication
+
+🔧 Installation:
+1. Download the APK file
+2. Enable "Install from Unknown Sources" in Android Settings
+3. Open the APK file to install
+4. Grant necessary permissions when prompted
+
+🚀 Getting Started:
+1. Open the app
+2. Enter your server URL (default: localhost:3002)
+3. Tap "Connect" to configure the server
+4. Tap "Start Chat" to begin using Copilot CLI
+5. Access "Settings" for configuration options
+
+⚠️  Note: This APK is unsigned for development purposes. Android may show security warnings during installation - this is normal for development APKs.
+
+🌐 Download URL: https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.4.0
+
+Built: 2024-12-19
