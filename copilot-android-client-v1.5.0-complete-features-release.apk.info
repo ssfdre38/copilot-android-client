@@ -1,0 +1,165 @@
+# 🚀 Copilot Android Client v1.5.0 - Complete Feature Set
+
+## 📦 Release Information
+- **Version**: 1.5.0 (Build 15)
+- **Release Date**: October 3, 2024
+- **APK Size**: 5.8 MB
+- **Minimum Android**: 7.0 (API 24)
+- **Target Android**: 14 (API 34)
+
+## ✨ New Features in v1.5.0
+
+### 🔍 Auto Server Discovery
+- **Automatic Network Scanning**: Discovers Copilot CLI servers on your local network
+- **Smart Detection**: Identifies servers by scanning common ports (3001, 3000, 8080, etc.)
+- **One-Click Save**: Option to save discovered servers for future use
+- **Server Health Check**: Validates server availability before connecting
+
+### 🔍 Advanced Search Functionality
+- **Chat History Search**: Find any message across all servers and conversations
+- **Real-time Search**: Results appear as you type (minimum 2 characters)
+- **Search Highlighting**: Matching terms are highlighted in results
+- **Quick Navigation**: Tap any result to jump to that conversation
+- **Cross-Server Search**: Search across all your configured servers
+
+### 📤 Import/Export System
+- **Complete Data Backup**: Export all servers, settings, and chat history
+- **Selective Export**: Choose to include or exclude chat history
+- **File Validation**: Pre-import validation ensures data integrity
+- **Merge Import**: Import data without overwriting existing servers
+- **JSON Format**: Human-readable backup format for easy inspection
+
+### 🔔 Background Notifications
+- **Real-time Alerts**: Get notified of responses when app is backgrounded
+- **Smart Detection**: Only shows notifications when app is not active
+- **Persistent Service**: Maintains connection for immediate notifications
+- **Battery Optimized**: Efficient background processing to preserve battery life
+- **Notification Controls**: Enable/disable notifications in settings
+
+### 🔄 Automated Updates
+- **GitHub Integration**: Direct connection to GitHub releases
+- **Auto-Detection**: Automatic checking for new versions
+- **Background Downloads**: Download updates in the background
+- **Version Comparison**: Smart version comparison logic
+- **One-Click Install**: Direct APK installation from app
+- **Release Notes**: View what's new before updating
+
+### ⚡ Performance Optimizations
+- **Memory Management**: Improved memory usage and garbage collection
+- **Background Processing**: Efficient handling of background tasks
+- **Connection Pooling**: Optimized network connections
+- **UI Responsiveness**: Smoother animations and transitions
+- **Battery Life**: Reduced power consumption for longer usage
+
+## 📱 Complete Feature List
+
+### Core Functionality
+- ✅ **Native Android App** with Material Design 3 UI
+- ✅ **Tablet Optimization** with dedicated layouts and landscape support
+- ✅ **WebSocket Communication** for real-time Copilot CLI interaction
+- ✅ **Multi-Server Management** with unlimited server configurations
+- ✅ **Keyboard Shortcuts** for all essential CLI operations
+
+### Advanced Features
+- ✅ **Auto Server Discovery** - Find servers automatically
+- ✅ **Advanced Search** - Search all chat history with highlighting
+- ✅ **Import/Export** - Complete data backup and restore
+- ✅ **Background Notifications** - Real-time alerts
+- ✅ **Automated Updates** - GitHub integration with auto-install
+- ✅ **Dark Mode** - System detection and manual toggle
+- ✅ **Chat History** - Persistent conversation storage
+- ✅ **Offline Help** - Complete documentation without internet
+
+### User Experience
+- ✅ **Responsive Design** - Works perfectly on phones and tablets
+- ✅ **Error Handling** - Robust error recovery and reporting
+- ✅ **Settings Management** - Comprehensive configuration options
+- ✅ **Data Management** - Clear, export, and import options
+- ✅ **Broad Compatibility** - Android 7.0+ with proper APK signing
+
+## 🔧 Technical Specifications
+
+### Architecture
+- **Package**: `com.ssfdre38.cpcli.android.client`
+- **Build System**: Gradle 8.2 with Android Gradle Plugin 8.1.0
+- **Language**: Kotlin with Java interoperability
+- **UI Framework**: Material Design 3 components
+- **Networking**: OkHttp + WebSocket + Retrofit
+- **Storage**: SharedPreferences with JSON serialization
+- **Background Processing**: Kotlin Coroutines
+
+### Permissions
+- `INTERNET` - Network communication
+- `ACCESS_NETWORK_STATE` - Connection status monitoring
+- `ACCESS_WIFI_STATE` - Network discovery
+- `POST_NOTIFICATIONS` - Background alerts
+- `FOREGROUND_SERVICE` - Persistent connections
+- `REQUEST_INSTALL_PACKAGES` - Auto-update installation
+
+### Dependencies
+- **AndroidX Libraries**: Core, AppCompat, Material Design
+- **Networking**: OkHttp 4.12.0, Retrofit 2.9.0
+- **WebSocket**: Java-WebSocket 1.5.4
+- **JSON**: Gson 2.10.1
+- **Coroutines**: Kotlinx-Coroutines 1.7.3
+- **Markdown**: Markwon 4.6.2
+
+## 🚀 Installation & Usage
+
+### Quick Start
+1. **Download**: Get the APK from GitHub releases
+2. **Install**: Allow installation from unknown sources
+3. **Discover**: Use "Discover Servers" to find your Copilot CLI server
+4. **Connect**: Tap to connect to discovered server
+5. **Chat**: Start chatting with Copilot CLI
+
+### Advanced Setup
+1. **Multiple Servers**: Add and manage multiple Copilot CLI instances
+2. **Background Sync**: Enable notifications for real-time alerts
+3. **Backup Data**: Export your configuration and chat history
+4. **Auto Updates**: Enable automatic update checking
+
+## 🐛 Known Issues & Limitations
+
+### Minor Issues
+- Server discovery requires local network access
+- Auto-update requires manual confirmation for security
+- Background notifications require Android notification permissions
+
+### Future Enhancements
+- Voice input support
+- Syntax highlighting for code responses
+- File upload/download capabilities
+- Plugin system for extensions
+
+## 📞 Support & Feedback
+
+- **GitHub Issues**: Report bugs and request features
+- **Documentation**: Built-in help system with offline access
+- **Community**: Share feedback and use cases
+
+## 📄 Legal Information
+
+### Open Source License
+This project is licensed under the MIT License.
+
+### Trademark Notices
+- **GitHub®** and **Copilot™** are trademarks of Microsoft Corporation
+- **Android™** and **Material Design™** are trademarks of Google LLC
+- This app is not affiliated with Microsoft, GitHub, or Google
+
+## 🎯 What's Next
+
+This v1.5.0 release completes all major features from the TODO list:
+- ✅ Auto Server Discovery
+- ✅ Advanced Search
+- ✅ Import/Export
+- ✅ Background Notifications
+- ✅ Automated Updates
+- ✅ Performance Optimizations
+
+Future development will focus on user feedback and advanced features like voice input, syntax highlighting, and file operations.
+
+---
+
+**Made with ❤️ for developers who want to code anywhere, anytime**
