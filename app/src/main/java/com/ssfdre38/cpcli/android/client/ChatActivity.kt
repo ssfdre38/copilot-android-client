@@ -31,6 +31,10 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     private lateinit var buttonArrowUp: Button
     private lateinit var buttonArrowDown: Button
     private lateinit var buttonBackspace: Button
+    
+    // Optional tablet buttons
+    private var buttonClear: Button? = null
+    private var buttonHistory: Button? = null
 
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var storageManager: StorageManager
@@ -69,6 +73,10 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
         buttonArrowUp = findViewById(R.id.buttonArrowUp)
         buttonArrowDown = findViewById(R.id.buttonArrowDown)
         buttonBackspace = findViewById(R.id.buttonBackspace)
+        
+        // Optional tablet buttons
+        buttonClear = findViewById<Button?>(R.id.buttonClear)
+        buttonHistory = findViewById<Button?>(R.id.buttonHistory)
     }
 
     private fun setupRecyclerView() {
@@ -141,6 +149,18 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
         buttonBackspace.setOnClickListener {
             sendCommand("\\b")
             Toast.makeText(this, "Sent Backspace", Toast.LENGTH_SHORT).show()
+        }
+        
+        // Optional tablet button listeners
+        buttonClear?.setOnClickListener {
+            editTextMessage.text?.clear()
+            Toast.makeText(this, "Input cleared", Toast.LENGTH_SHORT).show()
+        }
+        
+        buttonHistory?.setOnClickListener {
+            // Open chat history activity
+            val intent = android.content.Intent(this, ChatHistoryActivity::class.java)
+            startActivity(intent)
         }
     }
     

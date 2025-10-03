@@ -1,34 +1,46 @@
 # 🤖 Copilot Android Client
 
-A native Android application that provides a mobile interface for GitHub Copilot CLI interaction, featuring keyboard shortcuts and a clean Material Design UI.
+A native Android application that provides a mobile interface for GitHub Copilot CLI interaction, featuring keyboard shortcuts, tablet-optimized UI, and a clean Material Design interface.
 
 ## 📋 Project Overview
 
-This Android app serves as a mobile client for interacting with GitHub Copilot CLI through a WebSocket server. The current version focuses on stable UI functionality and keyboard shortcuts for enhanced copilot-cli interaction.
+This Android app serves as a mobile client for interacting with GitHub Copilot CLI through a WebSocket server. Version 1.3.0 introduces major tablet UI improvements and enhanced compatibility.
 
 ### 🔧 Components
 1. **Android Client** - Native Android app with Material Design 3 UI
 2. **Server Setup Scripts** - Automated Node.js WebSocket server deployment
 3. **Keyboard Shortcuts** - Essential keys for CLI interaction (Ctrl+C, Tab, Enter, etc.)
+4. **Tablet Support** - Optimized layouts for larger screens and landscape mode
 
 ### ✨ Current Features
 - 📱 **Native Android App** with modern Material Design 3 UI
-- ⌨️ **Keyboard Shortcuts** for copilot-cli commands (Ctrl+C, Ctrl+V, Tab, Enter, Esc, Arrow keys)
+- 📟 **Tablet Optimized** - Dedicated layouts for tablets (sw600dp) and landscape mode
+- ⌨️ **Enhanced Keyboard Shortcuts** for copilot-cli commands:
+  - Ctrl+C, Ctrl+V for copy/paste operations
+  - Tab for command completion
+  - Enter for command execution
+  - Escape for command cancellation
+  - Arrow keys for command history navigation
+  - Backspace for character deletion
+  - **NEW**: Clear button (tablet) for input clearing
+  - **NEW**: History button (tablet) for quick chat history access
 - 🔌 **Connection UI** for server configuration
 - ⚙️ **Settings Screen** with future feature placeholders
 - 🚀 **Stable Architecture** - Fixed crash issues from previous versions
 - 📱 **Android 12+** support (API 31 and above)
+- 🎨 **Responsive Design** - Adaptive layouts for phones and tablets
 
 ## 🚀 Quick Start
 
 ### Download APK
-📥 **[Download Latest Release (v1.2.0)](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.2.0)**
+📥 **[Download Latest Release (v1.3.0)](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.3.0)**
 
-- **Release APK** (13.2 MB) - Recommended for general use
-- **Debug APK** (15.5 MB) - For testing and development
+- **Release APK** (13.3 MB) - Recommended for general use with tablet support
+- **Debug APK** (15.7 MB) - For testing and development
 
 ### Prerequisites
 - **Android Device**: Android 12 (API 31) or higher
+- **Screen**: Optimized for phones (5"+ recommended) and tablets (7"+ ideal)
 - **Server**: Node.js 16+ (for WebSocket server setup)
 - **Optional**: GitHub CLI with Copilot extension
 
@@ -41,13 +53,13 @@ cd copilot-android-client/server
 ./setup-complete-server.sh
 ```
 
-## 📱 Current App Status (v1.2.0)
+## 📱 Current App Status (v1.3.0)
 
 ### ✅ Working Features
 - **App Launch** - Stable startup and navigation between screens
 - **UI Navigation** - Smooth navigation between main, chat, and settings screens  
+- **Tablet Support** - Optimized layouts for large screens and landscape orientation
 - **Keyboard Shortcuts** - All essential keys for CLI interaction:
-  - Ctrl+C, Ctrl+V for copy/paste operations
   - Tab for auto-completion suggestions
   - Enter to send commands
   - Esc, Arrow Up/Down for command history
