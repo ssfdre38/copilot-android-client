@@ -164,12 +164,22 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, if (enabled) "Notifications enabled" else "Notifications disabled", Toast.LENGTH_SHORT).show()
         }
         
-        val helpButton = createButtonRow("❓ Help & Support", "Get help using the app") {
-            Toast.makeText(this, "Help coming soon - check GitHub for documentation", Toast.LENGTH_SHORT).show()
+        val helpButton = createButtonRow("❓ Help & Support", "Offline documentation and guides") {
+            try {
+                val intent = Intent(this, HelpActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Help screen error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
         
-        val aboutButton = createButtonRow("ℹ️ About", "About this app") {
-            Toast.makeText(this, "Copilot Android Client v2.1.0 - Dynamic Layout Edition", Toast.LENGTH_LONG).show()
+        val aboutButton = createButtonRow("ℹ️ About", "App info, copyright & legal") {
+            try {
+                val intent = Intent(this, AboutActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, "About screen error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
         
         section.addView(notificationRow)
@@ -345,6 +355,13 @@ class SettingsActivity : AppCompatActivity() {
     // Convert dp to px for current screen density
     private fun dpToPx(dp: Int): Int {
         return (dp * resources.displayMetrics.density).toInt()
+    }
+    
+    // Get theme-aware colors
+    private fun getThemeColor(attr: Int): Int {
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
     }
     
     private fun saveSettings() {

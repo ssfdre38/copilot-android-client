@@ -52,11 +52,12 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun createBulletproofLayout() {
-        // Main container - bulletproof linear layout
+        // Main container - bulletproof linear layout with theme-aware colors
         val mainLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dpToPx(20))
             gravity = Gravity.CENTER_HORIZONTAL
+            setBackgroundColor(getThemeColor(android.R.attr.colorBackground))
         }
         
         // App title - always works
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             textSize = calculateSafeTextSize(24f)
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, dpToPx(30))
-            setTextColor(0xFF1976D2.toInt()) // Material blue
+            setTextColor(getThemeColor(android.R.attr.textColorPrimary))
         }
         
         // Connection section in card
@@ -306,8 +307,8 @@ class MainActivity : AppCompatActivity() {
         val drawable = android.graphics.drawable.GradientDrawable()
         drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
         drawable.cornerRadius = dpToPx(12).toFloat()
-        drawable.setColor(0x08000000)
-        drawable.setStroke(dpToPx(1), 0x1F000000)
+        drawable.setColor(getThemeColor(android.R.attr.colorBackgroundFloating))
+        drawable.setStroke(dpToPx(1), getThemeColor(android.R.attr.colorControlHighlight))
         return drawable
     }
     
@@ -340,6 +341,12 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             baseSizeSp // Fallback to base size
         }
+    }
+    
+    private fun getThemeColor(attr: Int): Int {
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
     }
     
     private fun dpToPx(dp: Int): Int {
