@@ -21,6 +21,9 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         try {
+            // Apply dark mode before creating layout
+            applyThemeFromSettings()
+            
             storageManager = StorageManager(this)
             
             // Load current settings
@@ -36,6 +39,22 @@ class SettingsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "Error loading settings: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
+        }
+    }
+    
+    private fun applyThemeFromSettings() {
+        try {
+            val prefs = getSharedPreferences("copilot_client", MODE_PRIVATE)
+            val isDarkModeStored = prefs.getBoolean("is_dark_mode", false)
+            
+            if (isDarkModeStored) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        } catch (e: Exception) {
+            // Use system default if anything fails
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
     
@@ -336,14 +355,22 @@ class SettingsActivity : AppCompatActivity() {
             )
             storageManager.saveAppSettings(settings)
             
-            // Apply theme change
+            // Also save to SharedPreferences for theme persistence
+            val prefs = getSharedPreferences("copilot_client", MODE_PRIVATE)
+            prefs.edit().putBoolean("is_dark_mode", isDarkMode).apply()
+            
+            // Apply theme change immediately
             if (isDarkMode) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
+            
+            // Recreate activity to apply theme immediately
+            recreate()
+            
         } catch (e: Exception) {
-            Toast.makeText(this, "Error saving settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error saving settings: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
     

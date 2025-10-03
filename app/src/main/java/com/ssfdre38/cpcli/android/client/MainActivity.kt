@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.*
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.setPadding
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         try {
+            // Apply dark mode theme before creating layout
+            applyThemeFromSettings()
+            
             createBulletproofLayout()
             title = "Copilot CLI Client"
             Toast.makeText(this, "✅ App started successfully!", Toast.LENGTH_SHORT).show()
@@ -28,6 +32,22 @@ class MainActivity : AppCompatActivity() {
             // Ultimate fallback - create minimal safe layout
             createFallbackLayout()
             Toast.makeText(this, "App started in safe mode", Toast.LENGTH_LONG).show()
+        }
+    }
+    
+    private fun applyThemeFromSettings() {
+        try {
+            val prefs = getSharedPreferences("copilot_client", MODE_PRIVATE)
+            val isDarkModeStored = prefs.getBoolean("is_dark_mode", false)
+            
+            if (isDarkModeStored) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        } catch (e: Exception) {
+            // Use system default if anything fails
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
     
