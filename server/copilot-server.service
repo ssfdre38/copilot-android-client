@@ -1,5 +1,5 @@
 [Unit]
-Description=Copilot CLI Android WebSocket Server
+Description=Real Copilot CLI Integration Server for Android
 Documentation=https://github.com/ssfdre38/copilot-android-client
 After=network.target
 
@@ -8,11 +8,12 @@ Type=simple
 User=ubuntu
 Group=ubuntu
 WorkingDirectory=/home/ubuntu/copilot-android-client/server
-ExecStart=/usr/bin/node /home/ubuntu/copilot-android-client/server/server.js
+ExecStart=/usr/bin/node /home/ubuntu/copilot-android-client/server/real-copilot-server.js
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production
 Environment=PORT=3002
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Logging
 StandardOutput=journal

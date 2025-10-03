@@ -9,15 +9,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ssfdre38.cpcli.android.client.data.ChatMessage
 import com.ssfdre38.cpcli.android.client.data.StorageManager
 import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
+import com.ssfdre38.cpcli.android.client.network.WebSocketListener
+import com.ssfdre38.cpcli.android.client.network.WebSocketMessage
 import java.util.*
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity(), WebSocketListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var storageManager: StorageManager
+    private var webSocketClient: CopilotWebSocketClient? = null
+    private var connectionStatus: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +34,17 @@ class ChatActivity : AppCompatActivity() {
                 setPadding(20, 20, 20, 20)
             }
             
-            // Title
+            // Title and connection status
             val titleText = TextView(this).apply {
-                text = "💬 Chat Terminal"
+                text = "🤖 Real GitHub Copilot CLI"
                 textSize = 20f
+                gravity = Gravity.CENTER
+                setPadding(0, 0, 0, 10)
+            }
+            
+            connectionStatus = TextView(this).apply {
+                text = "🔴 Connecting to server..."
+                textSize = 14f
                 gravity = Gravity.CENTER
                 setPadding(0, 0, 0, 20)
             }
@@ -94,6 +106,7 @@ class ChatActivity : AppCompatActivity() {
             buttonLayout.addView(backButton)
             
             mainLayout.addView(titleText)
+            mainLayout.addView(connectionStatus)
             mainLayout.addView(recyclerView)
             mainLayout.addView(inputLayout)
             mainLayout.addView(buttonLayout)
@@ -103,8 +116,9 @@ class ChatActivity : AppCompatActivity() {
             // Initialize functionality
             setupRecyclerView()
             setupListeners()
+            connectToServer()
             
-            Toast.makeText(this, "🎉 ChatActivity working!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "🎉 ChatActivity with real Copilot integration!", Toast.LENGTH_LONG).show()
             
         } catch (e: Exception) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -122,7 +136,7 @@ class ChatActivity : AppCompatActivity() {
             // Add a welcome message
             val welcomeMessage = ChatMessage(
                 id = UUID.randomUUID().toString(),
-                content = "Welcome to Copilot CLI Chat! 🚀\n\nThe activity transition issue has been resolved!",
+                content = "🤖 Welcome to Real GitHub Copilot CLI!\n\nConnecting to server...",
                 isFromUser = false,
                 timestamp = System.currentTimeMillis(),
                 serverId = "system"
@@ -138,12 +152,13 @@ class ChatActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val message = messageInput.text.toString().trim()
             if (message.isNotBlank()) {
+                // Add user message to chat
                 val chatMessage = ChatMessage(
                     id = UUID.randomUUID().toString(),
                     content = message,
                     isFromUser = true,
                     timestamp = System.currentTimeMillis(),
-                    serverId = "default"
+                    serverId = "user"
                 )
                 
                 chatAdapter.addMessage(chatMessage)
@@ -152,8 +167,75 @@ class ChatActivity : AppCompatActivity() {
                 // Scroll to bottom
                 recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
                 
-                Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show()
+                // Send to server via WebSocket
+                if (webSocketClient?.isConnected() == true) {
+                    webSocketClient?.sendMessage(message)
+                    Toast.makeText(this, "Message sent to Copilot!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+    }
+    
+    private fun connectToServer() {
+        try {
+            // Default to local server, but in production you'd get this from settings
+            val serverUrl = "ws://54.37.254.74:3002"
+            webSocketClient = CopilotWebSocketClient(serverUrl, this)
+            webSocketClient?.connect()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Connection error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+    
+    // WebSocketListener implementation
+    override fun onConnected() {
+        connectionStatus?.text = "🟢 Connected to Copilot server"
+        val connectMessage = ChatMessage(
+            id = UUID.randomUUID().toString(),
+            content = "✅ Connected to GitHub Copilot CLI server!\n\nYou can now chat with real AI assistance.",
+            isFromUser = false,
+            timestamp = System.currentTimeMillis(),
+            serverId = "system"
+        )
+        chatAdapter.addMessage(connectMessage)
+        recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+    }
+    
+    override fun onDisconnected() {
+        connectionStatus?.text = "🔴 Disconnected from server"
+        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+    }
+    
+    override fun onMessageReceived(message: WebSocketMessage) {
+        val chatMessage = ChatMessage(
+            id = UUID.randomUUID().toString(),
+            content = message.message ?: "Empty response",
+            isFromUser = false,
+            timestamp = System.currentTimeMillis(),
+            serverId = message.sessionId ?: "copilot"
+        )
+        chatAdapter.addMessage(chatMessage)
+        recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+    }
+    
+    override fun onError(error: String) {
+        connectionStatus?.text = "🔴 Connection error"
+        val errorMessage = ChatMessage(
+            id = UUID.randomUUID().toString(),
+            content = "❌ Error: $error",
+            isFromUser = false,
+            timestamp = System.currentTimeMillis(),
+            serverId = "error"
+        )
+        chatAdapter.addMessage(errorMessage)
+        recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+        Toast.makeText(this, "Error: $error", Toast.LENGTH_LONG).show()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketClient?.cleanup()
     }
 }

@@ -195,11 +195,8 @@ class RealCopilotIntegrationServer {
         try {
             console.log(`🤖 Initializing Copilot session for client: ${clientId}`);
             
-            // Start Copilot in interactive mode with specific options
-            const copilotProcess = spawn('copilot', [
-                '--allow-all-tools',
-                '--no-banner'
-            ], {
+            // Start Copilot in interactive mode with correct options
+            const copilotProcess = spawn('copilot', [], {
                 stdio: ['pipe', 'pipe', 'pipe'],
                 env: { 
                     ...process.env,
