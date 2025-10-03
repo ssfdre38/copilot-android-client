@@ -1,11 +1,13 @@
 {
   "name": "cpcli-android-server",
-  "version": "1.2.0",
-  "description": "WebSocket server to interface with GitHub Copilot CLI for Android clients",
+  "version": "3.0.0",
+  "description": "Enhanced WebSocket server with real GitHub Copilot CLI integration for Android clients",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node real-copilot-server.js",
+    "enhanced": "node enhanced-server.js", 
+    "dev": "nodemon real-copilot-server.js",
+    "legacy": "node server.js"
   },
   "dependencies": {
     "ws": "^8.14.2",

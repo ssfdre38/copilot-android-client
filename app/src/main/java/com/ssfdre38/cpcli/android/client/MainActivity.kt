@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         
         // App title - always works
         val titleText = TextView(this).apply {
-            text = "🚀 Copilot CLI Client"
+            text = "🤖 Real GitHub Copilot CLI"
             textSize = calculateSafeTextSize(24f)
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, dpToPx(30))
