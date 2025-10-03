@@ -1,0 +1,19 @@
+APK Information:
+Version: 1.5.2
+Build Date: 2024-10-03
+Package Name: com.ssfdre38.cpcli.android.client
+Min SDK: 24 (Android 7.0)
+Target SDK: 34 (Android 14)
+File Size: 6.04 MB
+
+Crash Fix Details:
+- Fixed app crashes on startup by improving error handling in ChatActivity
+- Added comprehensive logging for better debugging
+- Improved null pointer exception handling
+- Enhanced RecyclerView initialization error handling
+- Added try-catch blocks for critical UI initialization
+
+Testing Notes:
+- Built with proper error handling and logging
+- Ready for manual testing on physical devices
+- Should resolve startup crashes reported in v1.5.1

@@ -1,5 +1,26 @@
 # Changelog
 
+## Version 1.5.2 - Startup Crash Fix (2024-10-03)
+
+### 🔧 Critical Fixes
+- **Fixed App Startup Crashes**: Resolved crashes when launching ChatActivity
+- **Enhanced Error Handling**: Added comprehensive try-catch blocks throughout app initialization
+- **Improved Logging**: Added detailed error logging for better debugging
+- **RecyclerView Fix**: Fixed potential null pointer exceptions in chat list setup
+- **UI Initialization**: Enhanced view initialization with proper error reporting
+
+### 🛠️ Technical Improvements
+- Added RuntimeException handling for critical UI failures
+- Improved error messages for debugging purposes
+- Enhanced ChatActivity onCreate() method with proper exception handling
+- Added logging to identify specific failure points
+- Better resource validation for layout elements
+
+### 📱 Testing
+- Built with Android emulator support for testing
+- Added test script for automated APK validation
+- Improved build process for stability testing
+
 ## Version 1.4.0 - UI Restoration & Stability (2024-12-19)
 
 ### 🎯 UI Restoration

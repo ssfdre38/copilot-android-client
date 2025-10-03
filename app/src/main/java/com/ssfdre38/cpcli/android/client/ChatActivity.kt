@@ -60,44 +60,57 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
             // Connect to server if available
             connectToServer()
         } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error initializing chat", e)
             android.widget.Toast.makeText(this, "Error initializing chat: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
             finish()
         }
     }
 
     private fun initViews() {
-        recyclerViewMessages = findViewById(R.id.recyclerViewMessages)
-        editTextMessage = findViewById(R.id.editTextMessage)
-        buttonSendMessage = findViewById(R.id.buttonSendMessage)
-        
-        // Keyboard buttons
-        buttonCtrlC = findViewById(R.id.buttonCtrlC)
-        buttonCtrlV = findViewById(R.id.buttonCtrlV)
-        buttonTab = findViewById(R.id.buttonTab)
-        buttonEnter = findViewById(R.id.buttonEnter)
-        buttonEsc = findViewById(R.id.buttonEsc)
-        buttonArrowUp = findViewById(R.id.buttonArrowUp)
-        buttonArrowDown = findViewById(R.id.buttonArrowDown)
-        buttonBackspace = findViewById(R.id.buttonBackspace)
-        
-        // Optional tablet buttons - safely handle missing elements
         try {
-            buttonClear = findViewById(R.id.buttonClear)
+            recyclerViewMessages = findViewById(R.id.recyclerViewMessages)
+            editTextMessage = findViewById(R.id.editTextMessage)
+            buttonSendMessage = findViewById(R.id.buttonSendMessage)
+            
+            // Keyboard buttons
+            buttonCtrlC = findViewById(R.id.buttonCtrlC)
+            buttonCtrlV = findViewById(R.id.buttonCtrlV)
+            buttonTab = findViewById(R.id.buttonTab)
+            buttonEnter = findViewById(R.id.buttonEnter)
+            buttonEsc = findViewById(R.id.buttonEsc)
+            buttonArrowUp = findViewById(R.id.buttonArrowUp)
+            buttonArrowDown = findViewById(R.id.buttonArrowDown)
+            buttonBackspace = findViewById(R.id.buttonBackspace)
+            
+            // Optional tablet buttons - safely handle missing elements
+            try {
+                buttonClear = findViewById(R.id.buttonClear)
+            } catch (e: Exception) {
+                android.util.Log.d("ChatActivity", "buttonClear not found in layout")
+                buttonClear = null
+            }
+            
+            try {
+                buttonHistory = findViewById(R.id.buttonHistory)
+            } catch (e: Exception) {
+                android.util.Log.d("ChatActivity", "buttonHistory not found in layout")
+                buttonHistory = null
+            }
         } catch (e: Exception) {
-            buttonClear = null
-        }
-        
-        try {
-            buttonHistory = findViewById(R.id.buttonHistory)
-        } catch (e: Exception) {
-            buttonHistory = null
+            android.util.Log.e("ChatActivity", "Error initializing views", e)
+            throw RuntimeException("Failed to initialize views: ${e.message}", e)
         }
     }
 
     private fun setupRecyclerView() {
-        chatAdapter = ChatAdapter()
-        recyclerViewMessages.layoutManager = LinearLayoutManager(this)
-        recyclerViewMessages.adapter = chatAdapter
+        try {
+            chatAdapter = ChatAdapter()
+            recyclerViewMessages.layoutManager = LinearLayoutManager(this)
+            recyclerViewMessages.adapter = chatAdapter
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error setting up RecyclerView", e)
+            throw RuntimeException("Failed to setup RecyclerView: ${e.message}", e)
+        }
     }
     
     private fun loadChatHistory() {

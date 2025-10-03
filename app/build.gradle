@@ -11,8 +11,8 @@ android {
         applicationId "com.ssfdre38.cpcli.android.client"
         minSdk 24  // Android 7.0 (API 24) and up for broader compatibility
         targetSdk 34  // Target SDK 34 for better compatibility
-        versionCode 16
-        versionName "1.5.1"
+        versionCode 17
+        versionName "1.5.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
