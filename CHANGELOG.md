@@ -1,5 +1,31 @@
 # Changelog
 
+## Version 1.4.0 - UI Restoration & Stability (2024-12-19)
+
+### 🎯 UI Restoration
+- **Reverted to v1.1.0 Simple UI**: Restored the clean, working UI that was proven stable
+- **Perfect Phone & Tablet Support**: Simple layout works flawlessly on all device sizes
+- **Removed Complex Components**: Eliminated problematic view binding and complex data handling
+- **Focused Functionality**: Streamlined to core features that work reliably
+
+### 🔧 Stability Improvements  
+- **No More Crashes**: Simplified architecture eliminates app startup crashes
+- **Proven Stable**: Based on v1.1.2 architecture that was confirmed working
+- **Reliable Performance**: Consistent behavior across Android 7.0+ devices
+- **Clean Codebase**: Minimal dependencies for maximum stability
+
+### 🚀 Features
+- Simple server URL input field with default localhost:3002
+- One-click connect functionality  
+- Start Chat button to launch chat interface
+- Settings access for configuration
+- Material Design 3 components
+
+### 📱 Compatibility
+- **Android 7.0+** (API 24) - Broad device support
+- **Phone & Tablet**: Optimized layout for all screen sizes
+- **Android 15**: Full compatibility with latest Android version
+
 ## Version 1.3.1 - Critical Crash Fix (2024-12-19)
 
 ### 🔧 Critical Fixes
