@@ -1,0 +1,40 @@
+📱 **Copilot Android Client v1.7.0 - Crash Fix Release**
+
+🔧 **CRITICAL BUG FIXES**: This version resolves the startup crashes reported in v1.6.0
+
+📋 **APK Information:**
+- **File**: copilot-android-client-v1.7.0-crash-fix-release.apk
+- **Version**: 1.7.0 (Build 20)
+- **Size**: 6.0 MB
+- **Min Android**: 7.0+ (API 24)
+- **Target Android**: 14 (API 34)
+- **Package**: com.ssfdre38.cpcli.android.client
+
+🛠️ **Key Fixes in v1.7.0:**
+- ✅ Fixed startup crashes when launching ChatActivity
+- ✅ Enhanced WebSocket listener safety with Activity state checks
+- ✅ Added comprehensive error handling in all UI operations
+- ✅ Protected against race conditions during Activity destruction
+- ✅ Improved resource cleanup and initialization checks
+- ✅ Fixed coroutine context switching issues
+- ✅ Added safety checks for adapter and view operations
+
+🎯 **What This Fixes:**
+- App no longer crashes on startup
+- "Start Chat" button works reliably
+- WebSocket operations are protected against failures
+- UI operations handle edge cases gracefully
+- App continues functioning even when optional operations fail
+
+📲 **Installation:**
+```bash
+adb install copilot-android-client-v1.7.0-crash-fix-release.apk
+```
+
+🔐 **Security:**
+- APK is signed with debug certificate for development/testing
+- SHA256 checksum provided for verification
+- Source code available on GitHub
+
+🚀 **Recommendation:**
+**Immediate upgrade recommended** for all users experiencing crashes with v1.6.0
