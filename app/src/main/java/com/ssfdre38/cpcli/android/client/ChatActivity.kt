@@ -7,11 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ssfdre38.cpcli.android.client.data.ChatMessage
+import com.ssfdre38.cpcli.android.client.data.ServerConfigManager
 import com.ssfdre38.cpcli.android.client.data.StorageManager
-import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
 import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
 import com.ssfdre38.cpcli.android.client.network.WebSocketListener
 import com.ssfdre38.cpcli.android.client.network.WebSocketMessage
+import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import java.util.*
 
 class ChatActivity : AppCompatActivity(), WebSocketListener {
@@ -36,7 +38,7 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
             
             // Title and connection status
             val titleText = TextView(this).apply {
-                text = "🤖 Real GitHub Copilot CLI"
+                text = "🤖 GitHub Copilot CLI"
                 textSize = 20f
                 gravity = Gravity.CENTER
                 setPadding(0, 0, 0, 10)
@@ -180,13 +182,73 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     
     private fun connectToServer() {
         try {
-            // Default to local server, but in production you'd get this from settings
-            val serverUrl = "ws://54.37.254.74:3002"
-            webSocketClient = CopilotWebSocketClient(serverUrl, this)
-            webSocketClient?.connect()
+            // Show loading state
+            connectionStatus?.text = "🔄 Connecting..."
+            
+            // Get the active server from user configuration
+            val serverManager = ServerConfigManager(this)
+            val activeServer = serverManager.getActiveServer()
+            
+            if (activeServer != null) {
+                val serverUrl = activeServer.getFullUrl()
+                
+                // Validate server URL format
+                if (!isValidWebSocketUrl(serverUrl)) {
+                    connectionStatus?.text = "❌ Invalid server URL format"
+                    showErrorDialog("Connection Error", "Invalid server URL: $serverUrl")
+                    return
+                }
+                
+                webSocketClient = CopilotWebSocketClient(serverUrl, this)
+                
+                // Show connecting message with timeout
+                Toast.makeText(this, "🔄 Connecting to ${activeServer.name}...", Toast.LENGTH_SHORT).show()
+                
+                // Set connection timeout
+                val timeoutHandler = android.os.Handler(android.os.Looper.getMainLooper())
+                val timeoutRunnable = Runnable {
+                    if (connectionStatus?.text?.contains("Connecting") == true) {
+                        connectionStatus?.text = "⏰ Connection timeout"
+                        showErrorDialog("Connection Timeout", 
+                            "Failed to connect to ${activeServer.name} within 30 seconds.\n\n" +
+                            "Please check:\n" +
+                            "• Server is running and accessible\n" +
+                            "• URL and port are correct\n" +
+                            "• Network connection is stable")
+                    }
+                }
+                timeoutHandler.postDelayed(timeoutRunnable, 30000) // 30 second timeout
+                
+                webSocketClient?.connect()
+                
+                // Update last connected time
+                serverManager.updateLastConnected(activeServer.id)
+                
+            } else {
+                connectionStatus?.text = "⚠️ No server configured"
+                showErrorDialog("No Server", "No server configured. Please go to Settings → Manage Servers to add a server.")
+                finish()
+            }
         } catch (e: Exception) {
-            Toast.makeText(this, "Connection error: ${e.message}", Toast.LENGTH_LONG).show()
+            connectionStatus?.text = "❌ Connection failed"
+            showErrorDialog("Connection Error", "Failed to connect: ${e.message}")
         }
+    }
+    
+    private fun isValidWebSocketUrl(url: String): Boolean {
+        return url.startsWith("ws://") || url.startsWith("wss://")
+    }
+    
+    private fun showErrorDialog(title: String, message: String) {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("❌ $title")
+            .setMessage(message)
+            .setPositiveButton("OK", null)
+            .setNegativeButton("Retry") { _, _ ->
+                connectToServer()
+            }
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
     
     // WebSocketListener implementation
