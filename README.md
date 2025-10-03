@@ -76,16 +76,32 @@ This represents a **complete, feature-rich Android client** for GitHub Copilot C
 
 ### 1-Minute Setup
 ```bash
-# 1. Download APK from releases page and install on Android
+# 1. Download latest APK (v1.5.1) from:
+# https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.5.1
+
 # 2. For server setup:
 git clone https://github.com/ssfdre38/copilot-android-client.git
 cd copilot-android-client
 ./setup-server-autoboot-complete.sh
 ```
 
-## 📱 Current App Status (v1.3.1)
+### 📲 APK Installation (FIXED v1.5.1)
+✅ **Installation Issues Resolved** - The APK now installs properly without "invalid package" errors!
+
+**Download the latest working APK:**
+- **Direct Download**: [copilot-android-client-v1.5.1-installable-debug.apk](https://github.com/ssfdre38/copilot-android-client/releases/download/v1.5.1/copilot-android-client-v1.5.1-installable-debug.apk)
+- **Release Page**: [v1.5.1 Release](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.5.1)
+
+**Installation Steps:**
+1. Enable "Install from unknown sources" in Android settings
+2. Download the APK file above
+3. Install the APK - it should now install without any errors
+4. Open the app and configure your server connection
+
+## 📱 Current App Status (v1.5.1)
 
 ### ✅ Working Features
+- **App Installation** - ✅ **FIXED** - APK now installs properly on all Android devices (no more "invalid package" errors)
 - **App Launch** - ✅ **Stable startup** and smooth navigation
 - **Chat Activity** - ✅ **Full functionality** with real-time messaging
 - **UI Navigation** - Seamless navigation between all screens  
