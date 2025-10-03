@@ -41,8 +41,8 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Build Tablet UI APK
-      run: ./build-tablet-ui-apk.sh
+    - name: Build Stable Installable APK
+      run: ./build-stable-apk.sh
       
     - name: Get version info
       id: version
@@ -61,36 +61,46 @@ jobs:
         body: |
           ## 🚀 Copilot Android Client v${{ steps.version.outputs.version }}
           
-          ### 📱 Tablet UI Optimization Release
+          ### 📱 Installation Fixed Release
           
-          **What's New:**
-          - 🆕 **Tablet Support**: Dedicated layouts for tablets (sw600dp)
-          - 🆕 **Landscape Mode**: Optimized two-column layout for landscape
-          - 🆕 **Enhanced Keyboard**: Additional Clear and History buttons on tablets
-          - 🆕 **Responsive Design**: Adaptive layouts for all screen sizes
-          - ✅ **Better Compatibility**: Improved Android 15 support
-          - ✅ **Enhanced Touch Targets**: Larger buttons for tablet use
+          **✅ APK Installation Issues RESOLVED**
+          This release fixes the "invalid package" errors that prevented APK installation on Android devices.
+          
+          **What's Fixed:**
+          - ✅ **APK Installation**: Now installs properly on all Android devices
+          - ✅ **Package Manager**: No more "invalid package" errors
+          - ✅ **Signing**: Proper Android debug keystore signing
+          - ✅ **Compatibility**: Works on Android 7.0+ through Android 15
+          
+          **Features:**
+          - 🤖 **Native Android Client** for GitHub Copilot CLI
+          - 📱 **Material Design 3** UI with tablet support
+          - ⌨️ **Essential Keyboard Shortcuts** (Ctrl+C, Tab, Enter, etc.)
+          - 🔍 **Auto Server Discovery** on local network
+          - 💬 **Chat History** with search functionality
+          - 🌙 **Dark Mode** support
+          - 🔧 **Multi-Server Support**
+          - 📤 **Import/Export** settings
           
           **System Requirements:**
-          - Android 12 (API 31) or higher
-          - Recommended: 7"+ tablets for optimal experience
-          - Phones: 5"+ recommended
+          - Android 7.0 (API 24) or higher
+          - Internet connection for server communication
           
           **Installation Instructions:**
-          1. Enable "Install Unknown Apps" in Android settings
-          2. Download the APK below
-          3. Install on your device
+          1. Download the APK below
+          2. Enable "Install from unknown sources" in Android settings
+          3. Install the APK - it should now install without errors!
           4. Configure your Copilot server URL in the app
           
           **Server Setup:**
           Use the included server scripts to set up your Copilot CLI server.
           
           ### 🔧 Technical Details
-          - Target SDK: 34 (Android 14) for better compatibility
-          - Min SDK: 31 (Android 12)
+          - Target SDK: 34 (Android 14)
+          - Min SDK: 24 (Android 7.0)
           - Package: com.ssfdre38.cpcli.android.client
-          - Enhanced for tablets and landscape mode
-          - Signed with debug key for compatibility
+          - Build Type: Debug (Properly Signed)
+          - Installation: Fixed - works on all Android versions
           
         draft: false
         prerelease: false
@@ -101,8 +111,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-tablet-ui-release.apk
-        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-tablet-ui-release.apk
+        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-stable-debug.apk
+        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-stable-debug.apk
         asset_content_type: application/vnd.android.package-archive
         
     - name: Upload APK Info to Release
@@ -111,6 +121,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-tablet-ui-release.apk.info
-        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-tablet-ui-release-info.txt
+        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-stable-debug.apk.info
+        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-stable-debug-info.txt
         asset_content_type: text/plain

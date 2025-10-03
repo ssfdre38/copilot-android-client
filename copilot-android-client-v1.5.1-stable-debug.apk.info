@@ -1,0 +1,28 @@
+APK Information
+===============
+Version: 1.5.1
+Version Code: 16
+Package: com.ssfdre38.cpcli.android.client
+Target SDK: 34 (Android 14)
+Min SDK: 24 (Android 7.0)
+Build Type: Debug (Signed)
+Signing: Android Debug Keystore
+Installation: Should install properly on all Android devices
+
+Features:
+- Fixed APK installation issues
+- Proper Android signing
+- Works on Android 7.0+
+- Material Design 3 UI
+- Tablet support
+- WebSocket connection to Copilot CLI
+- Auto server discovery
+- Chat history
+- Dark mode
+- Multi-server support
+
+Installation Instructions:
+1. Enable "Install from unknown sources" in Android settings
+2. Download and install this APK
+3. Open the app and configure your server connection
+4. Enjoy GitHub Copilot CLI on your Android device!
