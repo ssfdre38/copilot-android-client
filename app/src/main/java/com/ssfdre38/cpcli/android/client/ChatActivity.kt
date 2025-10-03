@@ -44,19 +44,25 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        
+        try {
+            setContentView(R.layout.activity_chat)
 
-        storageManager = StorageManager(this)
-        
-        initViews()
-        setupRecyclerView()
-        setupListeners()
-        
-        // Load chat history
-        loadChatHistory()
-        
-        // Connect to server if available
-        connectToServer()
+            storageManager = StorageManager(this)
+            
+            initViews()
+            setupRecyclerView()
+            setupListeners()
+            
+            // Load chat history
+            loadChatHistory()
+            
+            // Connect to server if available
+            connectToServer()
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "Error initializing chat: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
 
     private fun initViews() {
@@ -74,9 +80,18 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
         buttonArrowDown = findViewById(R.id.buttonArrowDown)
         buttonBackspace = findViewById(R.id.buttonBackspace)
         
-        // Optional tablet buttons
-        buttonClear = findViewById<Button?>(R.id.buttonClear)
-        buttonHistory = findViewById<Button?>(R.id.buttonHistory)
+        // Optional tablet buttons - safely handle missing elements
+        try {
+            buttonClear = findViewById(R.id.buttonClear)
+        } catch (e: Exception) {
+            buttonClear = null
+        }
+        
+        try {
+            buttonHistory = findViewById(R.id.buttonHistory)
+        } catch (e: Exception) {
+            buttonHistory = null
+        }
     }
 
     private fun setupRecyclerView() {
@@ -94,14 +109,18 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     }
     
     private fun connectToServer() {
-        val defaultServer = storageManager.getDefaultServer()
-        if (defaultServer != null) {
-            currentServerId = defaultServer.id
-            val serverUrl = "ws://${defaultServer.url}:${defaultServer.port}"
-            webSocketClient = CopilotWebSocketClient(serverUrl, this)
-            webSocketClient?.connect()
-        } else {
-            Toast.makeText(this, "No server configured. Please set up a server in settings.", Toast.LENGTH_LONG).show()
+        try {
+            val defaultServer = storageManager.getDefaultServer()
+            if (defaultServer != null) {
+                currentServerId = defaultServer.id
+                val serverUrl = "ws://${defaultServer.url}:${defaultServer.port}"
+                webSocketClient = CopilotWebSocketClient(serverUrl, this)
+                webSocketClient?.connect()
+            } else {
+                Toast.makeText(this, "No server configured. Please set up a server in settings.", Toast.LENGTH_LONG).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to connect to server: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -200,39 +219,47 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     
     // WebSocket listener methods
     override fun onConnected() {
-        Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT).show()
+        }
     }
     
     override fun onDisconnected() {
-        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+        }
     }
     
     override fun onMessageReceived(message: WebSocketMessage) {
-        when (message.type) {
-            "response", "welcome" -> {
-                val chatMessage = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    content = message.message ?: "Empty response",
-                    isFromUser = false,
-                    timestamp = System.currentTimeMillis(),
-                    serverId = currentServerId
-                )
-                
-                // Add to UI
-                chatAdapter.addMessage(chatMessage)
-                scrollToBottom()
-                
-                // Save to storage
-                storageManager.saveChatMessage(chatMessage)
-            }
-            "error" -> {
-                Toast.makeText(this, "Server error: ${message.error}", Toast.LENGTH_LONG).show()
+        runOnUiThread {
+            when (message.type) {
+                "response", "welcome" -> {
+                    val chatMessage = ChatMessage(
+                        id = UUID.randomUUID().toString(),
+                        content = message.message ?: "Empty response",
+                        isFromUser = false,
+                        timestamp = System.currentTimeMillis(),
+                        serverId = currentServerId
+                    )
+                    
+                    // Add to UI
+                    chatAdapter.addMessage(chatMessage)
+                    scrollToBottom()
+                    
+                    // Save to storage
+                    storageManager.saveChatMessage(chatMessage)
+                }
+                "error" -> {
+                    Toast.makeText(this, "Server error: ${message.error}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
     
     override fun onError(error: String) {
-        Toast.makeText(this, "Connection error: $error", Toast.LENGTH_LONG).show()
+        runOnUiThread {
+            Toast.makeText(this, "Connection error: $error", Toast.LENGTH_LONG).show()
+        }
     }
     
     override fun onDestroy() {

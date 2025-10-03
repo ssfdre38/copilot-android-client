@@ -1,5 +1,26 @@
 # Changelog
 
+## Version 1.3.1 - Critical Crash Fix (2024-12-19)
+
+### 🔧 Critical Fixes
+- **App Crash Fixed**: Resolved critical crash when starting chat activity
+- **Error Handling**: Added comprehensive error handling throughout the app
+- **WebSocket Issues**: Fixed WebSocket connection and initialization problems
+- **UI Stability**: Enhanced UI stability for all device sizes
+- **Exception Safety**: Added proper exception handling for missing UI elements
+
+### 🔧 Compatibility Improvements
+- **Android Support**: Extended support from Android 7.0+ (was Android 12+)
+- **Android 15**: Improved Android 15 compatibility
+- **Target API**: Updated for better compatibility across Android versions
+- **Thread Safety**: Added proper UI thread handling for WebSocket callbacks
+
+### 🛠️ Technical Changes
+- Added try-catch blocks for critical operations
+- Improved WebSocket listener implementation with runOnUiThread
+- Better handling of optional UI elements in ChatActivity
+- Enhanced error reporting and debugging capabilities
+
 ## Version 1.3.0 - Tablet UI Optimization (2024-10-03)
 
 ### 🆕 New Features

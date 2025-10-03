@@ -1,0 +1,20 @@
+APK Information:
+================
+File: copilot-android-client-v1.3.1-crash-fix-release.apk
+Version: 1.3.1 (Build 12)
+Size: 5.9MB
+Type: Release Build
+Min SDK: Android 7.0 (API 24)
+Target SDK: Android 14 (API 34)
+
+Changes in v1.3.1:
+- Fixed app crash when starting chat activity
+- Added proper error handling throughout the app
+- Improved Android 15 compatibility
+- Fixed WebSocket connection issues
+- Enhanced UI stability for tablet devices
+- Better minSdk support (now supports Android 7.0+)
+- Fixed initialization issues in ChatActivity
+- Added proper exception handling for missing UI elements
+
+Built: $(date)
