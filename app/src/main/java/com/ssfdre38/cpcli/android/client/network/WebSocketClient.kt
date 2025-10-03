@@ -34,8 +34,15 @@ class CopilotWebSocketClient(
             webSocketClient = object : WebSocketClient(uri) {
                 override fun onOpen(handshake: ServerHandshake?) {
                     try {
-                        scope.launch(Dispatchers.Main) {
-                            listener.onConnected()
+                        android.util.Log.d("WebSocket", "Connection opened")
+                        scope.launch {
+                            try {
+                                withContext(Dispatchers.Main) {
+                                    listener.onConnected()
+                                }
+                            } catch (e: Exception) {
+                                android.util.Log.e("WebSocket", "Error calling onConnected on Main thread", e)
+                            }
                         }
                     } catch (e: Exception) {
                         android.util.Log.e("WebSocket", "Error in onOpen", e)
@@ -45,14 +52,27 @@ class CopilotWebSocketClient(
                 override fun onMessage(message: String?) {
                     message?.let { 
                         try {
+                            android.util.Log.d("WebSocket", "Received message: $it")
                             val wsMessage = gson.fromJson(it, WebSocketMessage::class.java)
-                            scope.launch(Dispatchers.Main) {
-                                listener.onMessageReceived(wsMessage)
+                            scope.launch {
+                                try {
+                                    withContext(Dispatchers.Main) {
+                                        listener.onMessageReceived(wsMessage)
+                                    }
+                                } catch (e: Exception) {
+                                    android.util.Log.e("WebSocket", "Error calling onMessageReceived on Main thread", e)
+                                }
                             }
                         } catch (e: Exception) {
                             android.util.Log.e("WebSocket", "Error parsing message", e)
-                            scope.launch(Dispatchers.Main) {
-                                listener.onError("Failed to parse message: ${e.message}")
+                            scope.launch {
+                                try {
+                                    withContext(Dispatchers.Main) {
+                                        listener.onError("Failed to parse message: ${e.message}")
+                                    }
+                                } catch (mainError: Exception) {
+                                    android.util.Log.e("WebSocket", "Error calling onError on Main thread", mainError)
+                                }
                             }
                         }
                     }
@@ -60,8 +80,15 @@ class CopilotWebSocketClient(
                 
                 override fun onClose(code: Int, reason: String?, remote: Boolean) {
                     try {
-                        scope.launch(Dispatchers.Main) {
-                            listener.onDisconnected()
+                        android.util.Log.d("WebSocket", "Connection closed: code=$code, reason=$reason")
+                        scope.launch {
+                            try {
+                                withContext(Dispatchers.Main) {
+                                    listener.onDisconnected()
+                                }
+                            } catch (e: Exception) {
+                                android.util.Log.e("WebSocket", "Error calling onDisconnected on Main thread", e)
+                            }
                         }
                     } catch (e: Exception) {
                         android.util.Log.e("WebSocket", "Error in onClose", e)
@@ -70,11 +97,18 @@ class CopilotWebSocketClient(
                 
                 override fun onError(ex: Exception?) {
                     try {
-                        scope.launch(Dispatchers.Main) {
-                            listener.onError(ex?.message ?: "Unknown WebSocket error")
+                        android.util.Log.e("WebSocket", "WebSocket error", ex)
+                        scope.launch {
+                            try {
+                                withContext(Dispatchers.Main) {
+                                    listener.onError(ex?.message ?: "Unknown WebSocket error")
+                                }
+                            } catch (e: Exception) {
+                                android.util.Log.e("WebSocket", "Error calling onError on Main thread", e)
+                            }
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("WebSocket", "Error in onError", e)
+                        android.util.Log.e("WebSocket", "Error in onError handler", e)
                     }
                 }
             }

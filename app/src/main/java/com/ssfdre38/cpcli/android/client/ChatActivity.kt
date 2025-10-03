@@ -46,42 +46,73 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
         super.onCreate(savedInstanceState)
         
         try {
+            android.util.Log.d("ChatActivity", "Starting ChatActivity onCreate")
             setContentView(R.layout.activity_chat)
 
+            // Initialize storage manager first
             storageManager = StorageManager(this)
+            android.util.Log.d("ChatActivity", "Storage manager initialized")
             
+            // Initialize UI components
             initViews()
-            setupRecyclerView()
-            setupListeners()
+            android.util.Log.d("ChatActivity", "Views initialized")
             
-            // Load chat history safely
+            // Setup RecyclerView 
+            setupRecyclerView()
+            android.util.Log.d("ChatActivity", "RecyclerView setup complete")
+            
+            // Setup button listeners
+            setupListeners()
+            android.util.Log.d("ChatActivity", "Listeners setup complete")
+            
+            // Load chat history safely (non-critical)
             try {
                 loadChatHistory()
+                android.util.Log.d("ChatActivity", "Chat history loaded successfully")
             } catch (e: Exception) {
-                android.util.Log.w("ChatActivity", "Failed to load chat history", e)
+                android.util.Log.w("ChatActivity", "Failed to load chat history - continuing without it", e)
+                // Show empty state instead of crashing
+                val emptyList = emptyList<ChatMessage>()
+                chatAdapter.setMessages(emptyList)
             }
             
-            // Connect to server if available - but don't crash if it fails
+            // Connect to server if available (non-critical)
             try {
                 connectToServer()
+                android.util.Log.d("ChatActivity", "Server connection attempted")
             } catch (e: Exception) {
-                android.util.Log.w("ChatActivity", "Failed to connect to server", e)
-                Toast.makeText(this, "Could not connect to server", Toast.LENGTH_SHORT).show()
+                android.util.Log.w("ChatActivity", "Failed to connect to server - user can try again later", e)
+                runOnUiThread {
+                    Toast.makeText(this, "Could not connect to server. Check settings.", Toast.LENGTH_SHORT).show()
+                }
             }
+            
+            android.util.Log.d("ChatActivity", "ChatActivity onCreate completed successfully")
+            
         } catch (e: Exception) {
-            android.util.Log.e("ChatActivity", "Error initializing chat", e)
-            android.widget.Toast.makeText(this, "Error initializing chat: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            android.util.Log.e("ChatActivity", "Critical error during onCreate", e)
+            // Show user-friendly error message
+            try {
+                runOnUiThread {
+                    Toast.makeText(this, "Error starting chat. Please restart the app.", Toast.LENGTH_LONG).show()
+                }
+            } catch (toastError: Exception) {
+                android.util.Log.e("ChatActivity", "Could not even show error toast", toastError)
+            }
+            
+            // Don't crash the app, just close this activity gracefully
             finish()
         }
     }
 
     private fun initViews() {
         try {
+            // Core UI elements - these must exist
             recyclerViewMessages = findViewById(R.id.recyclerViewMessages)
             editTextMessage = findViewById(R.id.editTextMessage)
             buttonSendMessage = findViewById(R.id.buttonSendMessage)
             
-            // Keyboard buttons
+            // Keyboard buttons - check each one safely
             buttonCtrlC = findViewById(R.id.buttonCtrlC)
             buttonCtrlV = findViewById(R.id.buttonCtrlV)
             buttonTab = findViewById(R.id.buttonTab)
@@ -92,22 +123,24 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
             buttonBackspace = findViewById(R.id.buttonBackspace)
             
             // Optional tablet buttons - safely handle missing elements
-            try {
-                buttonClear = findViewById(R.id.buttonClear)
+            buttonClear = try {
+                findViewById<Button>(R.id.buttonClear)
             } catch (e: Exception) {
-                android.util.Log.d("ChatActivity", "buttonClear not found in layout")
-                buttonClear = null
+                android.util.Log.d("ChatActivity", "buttonClear not found in layout - tablet feature not available")
+                null
             }
             
-            try {
-                buttonHistory = findViewById(R.id.buttonHistory)
+            buttonHistory = try {
+                findViewById<Button>(R.id.buttonHistory)
             } catch (e: Exception) {
-                android.util.Log.d("ChatActivity", "buttonHistory not found in layout")
-                buttonHistory = null
+                android.util.Log.d("ChatActivity", "buttonHistory not found in layout - tablet feature not available")
+                null
             }
+            
+            android.util.Log.d("ChatActivity", "Views initialized successfully")
         } catch (e: Exception) {
-            android.util.Log.e("ChatActivity", "Error initializing views", e)
-            throw RuntimeException("Failed to initialize views: ${e.message}", e)
+            android.util.Log.e("ChatActivity", "Critical error initializing views", e)
+            throw RuntimeException("Failed to initialize core views: ${e.message}", e)
         }
     }
 

@@ -1,5 +1,33 @@
 # Changelog
 
+## Version 1.6.0 - Enhanced Crash Prevention (2024-10-03)
+
+### 🔧 Major Stability Improvements
+- **Robust Startup Process**: Completely redesigned ChatActivity initialization with comprehensive error handling
+- **Safe UI Initialization**: Added graceful handling for missing optional UI elements (tablet-specific buttons)
+- **WebSocket Resilience**: Enhanced WebSocket client with proper coroutine context switching using withContext
+- **Non-Critical Operations**: Made chat history loading and server connection non-blocking to prevent startup crashes
+- **Detailed Logging**: Added extensive debug logging throughout the application lifecycle
+
+### 🛠️ Technical Enhancements
+- **Coroutine Safety**: Fixed Main dispatcher context switching in WebSocket callbacks
+- **Exception Isolation**: Isolated critical vs non-critical operations to prevent cascading failures
+- **View Safety**: Added safe findViewById operations for optional tablet UI elements
+- **Error Recovery**: Enhanced error recovery mechanisms with user-friendly messaging
+- **Memory Management**: Improved resource cleanup and memory management
+
+### 📱 User Experience
+- **Graceful Degradation**: App continues to function even if optional features fail
+- **Better Error Messages**: More informative error messages for troubleshooting
+- **Stable Performance**: Significant reduction in crash reports and improved app stability
+- **Universal Compatibility**: Works reliably across Android 7.0+ devices (API 24+)
+
+### 🔄 Version Information
+- **Version Code**: 19
+- **Package**: com.ssfdre38.cpcli.android.client
+- **Size**: 6.0 MB
+- **Compatibility**: Android 7.0+ (API 24 and above)
+
 ## Version 1.5.3 - Critical Crash Fix (2024-10-03)
 
 ### 🔧 Critical Fixes
