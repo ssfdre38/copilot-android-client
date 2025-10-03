@@ -1,0 +1,39 @@
+Copilot CLI Android Client v1.5.3 - Critical Crash Fix Release
+======================================================
+
+APK Information:
+- Package: com.ssfdre38.cpcli.android.client
+- Version Code: 18
+- Version Name: 1.5.3
+- Min SDK: 24 (Android 7.0+)
+- Target SDK: 34 (Android 14)
+- APK Size: 6.0 MB
+- Build Date: Fri Oct  3 04:55:04 UTC 2025
+
+Critical Fixes in v1.5.3:
+- Fixed startup crashes caused by uncaught exceptions in ChatActivity
+- Added proper error handling for WebSocket connection failures
+- Improved robustness of chat history loading
+- Better error handling in RecyclerView setup
+- Added safe exception handling for server connection attempts
+- Enhanced logging for debugging future issues
+
+Installation Notes:
+- This APK should install cleanly on Android 7.0 and newer
+- Fixes the "package appears to be invalid" issue from previous versions
+- Contains proper error handling to prevent app crashes on startup
+
+Known Working Features:
+- Main activity launches successfully
+- Settings and server management work
+- Chat interface opens without crashing
+- Keyboard shortcuts and UI elements are functional
+- Server discovery and connection handling
+
+Testing Recommendations:
+- Test on various Android versions (7.0 to 15)
+- Verify app doesn't crash when "Start Chat" is pressed
+- Check that server connection errors are handled gracefully
+- Ensure chat history loads without causing crashes
+
+SHA256: 74fd7fd3520c681f551560bbe38ad18059e42bc5cd01af0364f990b5a99914fb

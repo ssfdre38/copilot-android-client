@@ -33,8 +33,12 @@ class CopilotWebSocketClient(
             val uri = URI(serverUrl)
             webSocketClient = object : WebSocketClient(uri) {
                 override fun onOpen(handshake: ServerHandshake?) {
-                    scope.launch(Dispatchers.Main) {
-                        listener.onConnected()
+                    try {
+                        scope.launch(Dispatchers.Main) {
+                            listener.onConnected()
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("WebSocket", "Error in onOpen", e)
                     }
                 }
                 
@@ -46,6 +50,7 @@ class CopilotWebSocketClient(
                                 listener.onMessageReceived(wsMessage)
                             }
                         } catch (e: Exception) {
+                            android.util.Log.e("WebSocket", "Error parsing message", e)
                             scope.launch(Dispatchers.Main) {
                                 listener.onError("Failed to parse message: ${e.message}")
                             }
@@ -54,14 +59,22 @@ class CopilotWebSocketClient(
                 }
                 
                 override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                    scope.launch(Dispatchers.Main) {
-                        listener.onDisconnected()
+                    try {
+                        scope.launch(Dispatchers.Main) {
+                            listener.onDisconnected()
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("WebSocket", "Error in onClose", e)
                     }
                 }
                 
                 override fun onError(ex: Exception?) {
-                    scope.launch(Dispatchers.Main) {
-                        listener.onError(ex?.message ?: "Unknown WebSocket error")
+                    try {
+                        scope.launch(Dispatchers.Main) {
+                            listener.onError(ex?.message ?: "Unknown WebSocket error")
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("WebSocket", "Error in onError", e)
                     }
                 }
             }

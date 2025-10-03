@@ -54,11 +54,20 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
             setupRecyclerView()
             setupListeners()
             
-            // Load chat history
-            loadChatHistory()
+            // Load chat history safely
+            try {
+                loadChatHistory()
+            } catch (e: Exception) {
+                android.util.Log.w("ChatActivity", "Failed to load chat history", e)
+            }
             
-            // Connect to server if available
-            connectToServer()
+            // Connect to server if available - but don't crash if it fails
+            try {
+                connectToServer()
+            } catch (e: Exception) {
+                android.util.Log.w("ChatActivity", "Failed to connect to server", e)
+                Toast.makeText(this, "Could not connect to server", Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             android.util.Log.e("ChatActivity", "Error initializing chat", e)
             android.widget.Toast.makeText(this, "Error initializing chat: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
@@ -105,7 +114,9 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     private fun setupRecyclerView() {
         try {
             chatAdapter = ChatAdapter()
-            recyclerViewMessages.layoutManager = LinearLayoutManager(this)
+            recyclerViewMessages.layoutManager = LinearLayoutManager(this).apply {
+                stackFromEnd = true
+            }
             recyclerViewMessages.adapter = chatAdapter
         } catch (e: Exception) {
             android.util.Log.e("ChatActivity", "Error setting up RecyclerView", e)
@@ -114,10 +125,15 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     }
     
     private fun loadChatHistory() {
-        val history = storageManager.getChatHistory(currentServerId)
-        chatAdapter.setMessages(history)
-        if (history.isNotEmpty()) {
-            recyclerViewMessages.scrollToPosition(history.size - 1)
+        try {
+            val history = storageManager.getChatHistory(currentServerId)
+            chatAdapter.setMessages(history)
+            if (history.isNotEmpty()) {
+                recyclerViewMessages.scrollToPosition(history.size - 1)
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error loading chat history", e)
+            // Don't show toast for this as it's not critical
         }
     }
     
@@ -133,6 +149,7 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
                 Toast.makeText(this, "No server configured. Please set up a server in settings.", Toast.LENGTH_LONG).show()
             }
         } catch (e: Exception) {
+            android.util.Log.e("ChatActivity", "Error connecting to server", e)
             Toast.makeText(this, "Failed to connect to server: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }

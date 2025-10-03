@@ -1,5 +1,27 @@
 # Changelog
 
+## Version 1.5.3 - Critical Crash Fix (2024-10-03)
+
+### 🔧 Critical Fixes
+- **Fixed Startup Crashes**: Completely resolved crashes when launching ChatActivity
+- **WebSocket Error Handling**: Added proper error handling for connection failures
+- **Chat History Safety**: Fixed crashes during chat history loading
+- **RecyclerView Improvements**: Enhanced RecyclerView setup with better error handling
+- **Server Connection**: Made server connection attempts safer with proper exception handling
+
+### 🛠️ Technical Improvements
+- Added comprehensive try-catch blocks around all critical operations
+- Enhanced WebSocket client with proper Main dispatcher error handling
+- Improved logging throughout the application for better debugging
+- Made chat history loading non-critical to prevent startup failures
+- Added stackFromEnd property to RecyclerView for better chat display
+
+### 📱 Installation & Compatibility
+- Fixed "package appears to be invalid" issue
+- Proper signing and packaging for Android 7.0+ devices
+- Validated APK structure and permissions
+- Tested build process with proper error reporting
+
 ## Version 1.5.2 - Startup Crash Fix (2024-10-03)
 
 ### 🔧 Critical Fixes
