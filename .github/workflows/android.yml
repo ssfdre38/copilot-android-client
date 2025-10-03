@@ -1,0 +1,140 @@
+name: Android CI/CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+    
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+      
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+    
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
+        
+    - name: Upload Release APK  
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download Debug APK
+      uses: actions/download-artifact@v4
+      with:
+        name: debug-apk
+        path: ./
+        
+    - name: Download Release APK
+      uses: actions/download-artifact@v4
+      with:
+        name: release-apk
+        path: ./
+    
+    - name: Get version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Rename APKs
+      run: |
+        mv app-debug.apk copilot-android-client-v${{ steps.version.outputs.VERSION }}-debug.apk
+        mv app-release-unsigned.apk copilot-android-client-v${{ steps.version.outputs.VERSION }}-release.apk
+    
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << 'EOF'
+        # 🤖 Copilot Android Client v${{ steps.version.outputs.VERSION }}
+        
+        ## 📱 Installation
+        
+        ### Recommended
+        - **[copilot-android-client-v${{ steps.version.outputs.VERSION }}-release.apk](https://github.com/ssfdre38/copilot-android-client/releases/download/v${{ steps.version.outputs.VERSION }}/copilot-android-client-v${{ steps.version.outputs.VERSION }}-release.apk)** - Production build (recommended)
+        
+        ### Development
+        - **[copilot-android-client-v${{ steps.version.outputs.VERSION }}-debug.apk](https://github.com/ssfdre38/copilot-android-client/releases/download/v${{ steps.version.outputs.VERSION }}/copilot-android-client-v${{ steps.version.outputs.VERSION }}-debug.apk)** - Debug build with extra logging
+        
+        ## 📋 Requirements
+        - **Android 12 (API 31)** or higher
+        - **WebSocket server** running Copilot CLI (see server setup in repository)
+        
+        ## 🚀 Quick Setup
+        1. Download and install the APK
+        2. Set up your Copilot CLI server (see repository documentation)
+        3. Add server configuration in the app
+        4. Start chatting with Copilot!
+        
+        ## 🔧 What's New in v${{ steps.version.outputs.VERSION }}
+        
+        See the [CHANGELOG](https://github.com/ssfdre38/copilot-android-client/blob/main/README.md#-version-history) for detailed release notes.
+        
+        ## 🐛 Issues & Support
+        
+        - **Bug Reports**: [GitHub Issues](https://github.com/ssfdre38/copilot-android-client/issues)
+        - **Feature Requests**: [GitHub Discussions](https://github.com/ssfdre38/copilot-android-client/discussions)
+        - **Documentation**: [Repository README](https://github.com/ssfdre38/copilot-android-client/blob/main/README.md)
+        
+        ---
+        
+        **Built with ❤️ for developers who want to code anywhere, anytime**
+        EOF
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          copilot-android-client-v${{ steps.version.outputs.VERSION }}-debug.apk
+          copilot-android-client-v${{ steps.version.outputs.VERSION }}-release.apk
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

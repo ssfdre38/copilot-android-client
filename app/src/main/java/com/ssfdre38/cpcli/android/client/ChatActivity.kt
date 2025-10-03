@@ -2,16 +2,21 @@ package com.ssfdre38.cpcli.android.client
 
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.ssfdre38.cpcli.android.client.data.ChatMessage
+import com.ssfdre38.cpcli.android.client.data.StorageManager
+import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
+import com.ssfdre38.cpcli.android.client.network.WebSocketListener
+import com.ssfdre38.cpcli.android.client.network.WebSocketMessage
+import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import java.util.*
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity(), WebSocketListener {
 
     private lateinit var recyclerViewMessages: RecyclerView
     private lateinit var editTextMessage: TextInputEditText
@@ -27,13 +32,27 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var buttonArrowDown: Button
     private lateinit var buttonBackspace: Button
 
+    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var storageManager: StorageManager
+    private var webSocketClient: CopilotWebSocketClient? = null
+    private var currentSessionId: String = UUID.randomUUID().toString()
+    private var currentServerId: String = "default"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        storageManager = StorageManager(this)
+        
         initViews()
         setupRecyclerView()
         setupListeners()
+        
+        // Load chat history
+        loadChatHistory()
+        
+        // Connect to server if available
+        connectToServer()
     }
 
     private fun initViews() {
@@ -53,59 +72,151 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
+        chatAdapter = ChatAdapter()
         recyclerViewMessages.layoutManager = LinearLayoutManager(this)
-        // Note: Adapter will be added later when implementing full functionality
+        recyclerViewMessages.adapter = chatAdapter
+    }
+    
+    private fun loadChatHistory() {
+        val history = storageManager.getChatHistory(currentServerId)
+        chatAdapter.setMessages(history)
+        if (history.isNotEmpty()) {
+            recyclerViewMessages.scrollToPosition(history.size - 1)
+        }
+    }
+    
+    private fun connectToServer() {
+        val defaultServer = storageManager.getDefaultServer()
+        if (defaultServer != null) {
+            currentServerId = defaultServer.id
+            val serverUrl = "ws://${defaultServer.url}:${defaultServer.port}"
+            webSocketClient = CopilotWebSocketClient(serverUrl, this)
+            webSocketClient?.connect()
+        } else {
+            Toast.makeText(this, "No server configured. Please set up a server in settings.", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupListeners() {
         buttonSendMessage.setOnClickListener {
-            val message = editTextMessage.text.toString()
-            if (message.isNotBlank()) {
-                // TODO: Send message to copilot CLI
-                editTextMessage.text?.clear()
-                Toast.makeText(this, "Message sent: $message", Toast.LENGTH_SHORT).show()
-            }
+            sendMessage()
         }
 
         // Keyboard button listeners
         buttonCtrlC.setOnClickListener {
-            // TODO: Send Ctrl+C
-            Toast.makeText(this, "Ctrl+C", Toast.LENGTH_SHORT).show()
+            sendCommand("^C")
+            Toast.makeText(this, "Sent Ctrl+C", Toast.LENGTH_SHORT).show()
         }
 
         buttonCtrlV.setOnClickListener {
-            // TODO: Send Ctrl+V
-            Toast.makeText(this, "Ctrl+V", Toast.LENGTH_SHORT).show()
+            sendCommand("^V")
+            Toast.makeText(this, "Sent Ctrl+V", Toast.LENGTH_SHORT).show()
         }
 
         buttonTab.setOnClickListener {
-            // TODO: Send Tab
-            Toast.makeText(this, "Tab", Toast.LENGTH_SHORT).show()
+            sendCommand("\\t")
+            Toast.makeText(this, "Sent Tab", Toast.LENGTH_SHORT).show()
         }
 
         buttonEnter.setOnClickListener {
-            // TODO: Send Enter
-            Toast.makeText(this, "Enter", Toast.LENGTH_SHORT).show()
+            sendCommand("\\n")
+            Toast.makeText(this, "Sent Enter", Toast.LENGTH_SHORT).show()
         }
 
         buttonEsc.setOnClickListener {
-            // TODO: Send Escape
-            Toast.makeText(this, "Escape", Toast.LENGTH_SHORT).show()
+            sendCommand("\\e")
+            Toast.makeText(this, "Sent Escape", Toast.LENGTH_SHORT).show()
         }
 
         buttonArrowUp.setOnClickListener {
-            // TODO: Send Arrow Up
-            Toast.makeText(this, "Arrow Up", Toast.LENGTH_SHORT).show()
+            sendCommand("\\u001b[A")
+            Toast.makeText(this, "Sent Arrow Up", Toast.LENGTH_SHORT).show()
         }
 
         buttonArrowDown.setOnClickListener {
-            // TODO: Send Arrow Down
-            Toast.makeText(this, "Arrow Down", Toast.LENGTH_SHORT).show()
+            sendCommand("\\u001b[B")
+            Toast.makeText(this, "Sent Arrow Down", Toast.LENGTH_SHORT).show()
         }
 
         buttonBackspace.setOnClickListener {
-            // TODO: Send Backspace
-            Toast.makeText(this, "Backspace", Toast.LENGTH_SHORT).show()
+            sendCommand("\\b")
+            Toast.makeText(this, "Sent Backspace", Toast.LENGTH_SHORT).show()
         }
+    }
+    
+    private fun sendMessage() {
+        val message = editTextMessage.text.toString().trim()
+        if (message.isNotBlank()) {
+            val chatMessage = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                content = message,
+                isFromUser = true,
+                timestamp = System.currentTimeMillis(),
+                serverId = currentServerId
+            )
+            
+            // Add to UI
+            chatAdapter.addMessage(chatMessage)
+            scrollToBottom()
+            
+            // Save to storage
+            storageManager.saveChatMessage(chatMessage)
+            
+            // Send to server
+            webSocketClient?.sendMessage(message, currentSessionId)
+            
+            // Clear input
+            editTextMessage.text?.clear()
+        }
+    }
+    
+    private fun sendCommand(command: String) {
+        webSocketClient?.sendCommand(command, currentSessionId)
+    }
+    
+    private fun scrollToBottom() {
+        recyclerViewMessages.scrollToPosition(chatAdapter.itemCount - 1)
+    }
+    
+    // WebSocket listener methods
+    override fun onConnected() {
+        Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT).show()
+    }
+    
+    override fun onDisconnected() {
+        Toast.makeText(this, "Disconnected from server", Toast.LENGTH_SHORT).show()
+    }
+    
+    override fun onMessageReceived(message: WebSocketMessage) {
+        when (message.type) {
+            "response", "welcome" -> {
+                val chatMessage = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    content = message.message ?: "Empty response",
+                    isFromUser = false,
+                    timestamp = System.currentTimeMillis(),
+                    serverId = currentServerId
+                )
+                
+                // Add to UI
+                chatAdapter.addMessage(chatMessage)
+                scrollToBottom()
+                
+                // Save to storage
+                storageManager.saveChatMessage(chatMessage)
+            }
+            "error" -> {
+                Toast.makeText(this, "Server error: ${message.error}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+    
+    override fun onError(error: String) {
+        Toast.makeText(this, "Connection error: $error", Toast.LENGTH_LONG).show()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketClient?.cleanup()
     }
 }
