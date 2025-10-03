@@ -1,39 +1,42 @@
 # 📱 Copilot Android Client - Download Guide
 
-## 🚀 Quick Download Links
+## 🚀 Latest Release - v1.2.2 (Android 15 Compatible)
 
-### Latest Release (v1.0.0)
+### 📥 Direct Download Links
 
-**🎯 Recommended - Release Version:**
+**🎯 Recommended - Android 15 Compatible:**
 ```
-https://github.com/ssfdre38/copilot-android-client/releases/download/v1.0.0/copilot-android-client.apk
+https://github.com/ssfdre38/copilot-android-client/releases/download/v1.2.2/copilot-android-client-v1.2.2-android15-release.apk
 ```
-- **Size**: 13.3 MB
+- **Size**: 13.0 MB
 - **Type**: Optimized release build
-- **Best for**: General use
+- **Android**: 12+ (API 31+) - Optimized for Android 15
+- **Package**: com.ssfdre38.cpcli.android.client
 
-**🔧 Debug Version (with verbose logging):**
-```
-https://github.com/ssfdre38/copilot-android-client/releases/download/v1.0.0/app-debug.apk
-```
-- **Size**: 15.8 MB
-- **Type**: Debug build with logging
-- **Best for**: Troubleshooting and development
+## 📋 System Requirements
 
-## 📋 Requirements
-
-- **Android Version**: 12+ (API 31+)
+- **Android Version**: 12+ (API 31+) **[Android 15 Compatible]**
 - **Storage**: ~20 MB free space
 - **Network**: Internet connection to reach server
-- **Permissions**: Network access
+- **Permissions**: Network access, notifications
 
 ## 🔧 Installation Steps
 
-1. **Download APK** - Use one of the links above
-2. **Enable Unknown Sources** - Allow installation from unknown sources in Android settings
+### For Android 15 Users:
+1. **Download APK** - Use the direct link above
+2. **Enable Unknown Apps** - Settings → Security → Install unknown apps → [Your Browser] → Allow
 3. **Install APK** - Tap the downloaded file and follow prompts
-4. **Open App** - Launch "Copilot Client" from your app drawer
-5. **Configure Server** - Enter your server details
+4. **Grant Permissions** - Allow network and notification permissions
+5. **Open App** - Launch "Copilot Client" from your app drawer
+6. **Configure Server** - Enter your server details
+
+### ⚠️ Android 15 Installation Notes
+
+If you get "package appears to be invalid":
+- Make sure you downloaded the v1.2.2 APK (not older versions)
+- Restart your device and try again
+- Ensure sufficient storage space
+- Verify "Install unknown apps" is enabled for your download source
 
 ## 🖥️ Server Information
 
