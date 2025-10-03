@@ -26,45 +26,58 @@ This Android app serves as a mobile client for interacting with GitHub Copilot C
   - **NEW**: History button (tablet) for quick chat history access
 - 🔌 **Connection UI** for server configuration
 - ⚙️ **Settings Screen** with future feature placeholders
-- 🚀 **Stable Architecture** - Fixed crash issues from previous versions
-- 📱 **Android 12+** support (API 31 and above)
+- 🚀 **Stable Architecture** - Fixed critical crash issues and improved error handling
+- 📱 **Android 7.0+** support (API 24 and above) - Broader compatibility
+- ⚡ **Enhanced WebSocket** - Improved connection stability and error handling
 - 🎨 **Responsive Design** - Adaptive layouts for phones and tablets
 
-## 🚀 Quick Start
+## 📱 Download & Installation
 
-### Download APK
-📥 **[Download Latest Release (v1.3.0)](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.3.0)**
+### 📥 Latest Release - v1.3.1 (Crash Fix)
+**[Download APK from GitHub Releases](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.3.1)**
 
-- **Release APK** (13.3 MB) - Recommended for general use with tablet support
-- **Debug APK** (15.7 MB) - For testing and development
+- **File**: `copilot-android-client-v1.3.1-crash-fix-release.apk` (5.9 MB)
+- **Android Version**: Android 7.0 (API 24) or higher
+- **Size**: 5.9 MB
+- **Status**: ✅ **Fixed critical crash issue**
+
+### 🔧 What's Fixed in v1.3.1
+- ✅ **Critical**: Fixed app crash when starting chat activity
+- ✅ **Stability**: Enhanced error handling throughout the app
+- ✅ **Compatibility**: Now supports Android 7.0+ (was Android 12+)
+- ✅ **WebSocket**: Improved connection stability
+- ✅ **UI**: Better handling of missing UI elements
 
 ### Prerequisites
-- **Android Device**: Android 12 (API 31) or higher
-- **Screen**: Optimized for phones (5"+ recommended) and tablets (7"+ ideal)
+- **Android Device**: Android 7.0 (API 24) or higher  
 - **Server**: Node.js 16+ (for WebSocket server setup)
 - **Optional**: GitHub CLI with Copilot extension
 
+## 🚀 Quick Start
+
 ### 1-Minute Setup
 ```bash
-# Download APK from releases page
-# Install on Android device
-# For server setup (coming in next release):
-cd copilot-android-client/server
-./setup-complete-server.sh
+# 1. Download APK from releases page and install on Android
+# 2. For server setup:
+git clone https://github.com/ssfdre38/copilot-android-client.git
+cd copilot-android-client
+./setup-server-autoboot-complete.sh
 ```
 
-## 📱 Current App Status (v1.3.0)
+## 📱 Current App Status (v1.3.1)
 
 ### ✅ Working Features
-- **App Launch** - Stable startup and navigation between screens
+- **App Launch** - ✅ **Fixed crash issue** - Stable startup and navigation
+- **Chat Activity** - ✅ **Fixed critical crash** - Now working properly
 - **UI Navigation** - Smooth navigation between main, chat, and settings screens  
+- **Error Handling** - ✅ **Enhanced** - Better error reporting and recovery
 - **Tablet Support** - Optimized layouts for large screens and landscape orientation
 - **Keyboard Shortcuts** - All essential keys for CLI interaction:
   - Tab for auto-completion suggestions
   - Enter to send commands
   - Esc, Arrow Up/Down for command history
   - Backspace for editing
-- **WebSocket Connection** - Real-time communication with copilot-cli server
+- **WebSocket Connection** - ✅ **Improved** - Enhanced stability and error handling
 - **Chat Functionality** - Send/receive messages to/from copilot-cli
 - **Multi-server Support** - Add, edit, delete, and manage multiple servers
 - **Chat History** - Automatic saving and viewing of conversation history
@@ -72,6 +85,7 @@ cd copilot-android-client/server
 - **Auto-updates** - Manual update checking (automated coming soon)
 - **Settings Management** - Comprehensive configuration options
 - **Offline Help** - Built-in documentation and troubleshooting guide
+- **Broad Compatibility** - ✅ **Improved** - Now supports Android 7.0+
 
 ### 🚧 In Development (Next Release)
 - **Auto Server Discovery** - Detect servers on local network
