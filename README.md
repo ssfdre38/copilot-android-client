@@ -1,62 +1,72 @@
 # 🤖 Copilot Android Client
 
-A complete Android application that connects mobile devices to a GitHub Copilot CLI server via WebSocket, enabling users to interact with Copilot from their smartphones and tablets.
+A native Android application that provides a mobile interface for GitHub Copilot CLI interaction, featuring keyboard shortcuts and a clean Material Design UI.
 
 ## 📋 Project Overview
 
-This project demonstrates how to build a bridge between mobile devices and AI-powered development tools. It consists of:
+This Android app serves as a mobile client for interacting with GitHub Copilot CLI through a WebSocket server. The current version focuses on stable UI functionality and keyboard shortcuts for enhanced copilot-cli interaction.
 
 ### 🔧 Components
-1. **Android Client** - Native Android app with Material Design UI
-2. **Node.js WebSocket Server** - Bridge between Android and Copilot CLI
-3. **Real-time Communication** - WebSocket-based messaging protocol
+1. **Android Client** - Native Android app with Material Design 3 UI
+2. **Server Setup Scripts** - Automated Node.js WebSocket server deployment
+3. **Keyboard Shortcuts** - Essential keys for CLI interaction (Ctrl+C, Tab, Enter, etc.)
 
-### ✨ Features
+### ✨ Current Features
 - 📱 **Native Android App** with modern Material Design 3 UI
-- 🔌 **Real-time WebSocket Communication** for instant responses
-- 🔐 **Optional Authentication** with API key support
-- 💬 **Chat Interface** with conversation history
-- 🎯 **Smart Fallback Responses** when Copilot CLI unavailable
-- 🔄 **Session Management** for context continuity
-- 📶 **Network Auto-detection** and error handling
-- 🛡️ **Robust Error Handling** with user-friendly messages
+- ⌨️ **Keyboard Shortcuts** for copilot-cli commands (Ctrl+C, Ctrl+V, Tab, Enter, Esc, Arrow keys)
+- 🔌 **Connection UI** for server configuration
+- ⚙️ **Settings Screen** with future feature placeholders
+- 🚀 **Stable Architecture** - Fixed crash issues from previous versions
+- 📱 **Android 12+** support (API 31 and above)
 
 ## 🚀 Quick Start
 
+### Download APK
+📥 **[Download Latest Release (v1.1.2)](https://github.com/ssfdre38/copilot-android-client/releases/tag/v1.1.2)**
+
+- **Release APK** (12.6 MB) - Recommended for general use
+- **Debug APK** (14.8 MB) - For testing and development
+
 ### Prerequisites
-- **Android Development**: Android Studio 4.0+, SDK API 24+
-- **Server**: Node.js 16+, npm
+- **Android Device**: Android 12 (API 31) or higher
+- **Server**: Node.js 16+ (for WebSocket server setup)
 - **Optional**: GitHub CLI with Copilot extension
 
 ### 1-Minute Setup
 ```bash
-# Clone or create the project structure
-mkdir CopilotAndroidClient && cd CopilotAndroidClient
-
-# Set up the server
-mkdir server && cd server
-npm init -y
-npm install ws express uuid
-# Copy server.js file (provided in project)
-npm start
-
-# Build Android app
-cd .. && ./gradlew assembleDebug
+# Download APK from releases page
+# Install on Android device
+# For server setup (coming in next release):
+cd copilot-android-client/server
+./setup-complete-server.sh
 ```
 
-## 📱 Android App Features
+## 📱 Current App Status (v1.1.2)
 
-### User Interface
-- **Connection Setup**: Easy server configuration with IP/port input
-- **Chat Interface**: WhatsApp-style messaging with timestamps
-- **Status Indicators**: Real-time connection status with color coding
-- **Material Design**: Modern Android UI following Google guidelines
+### ✅ Working Features
+- **App Launch** - Fixed critical crash issues, app now starts correctly
+- **UI Navigation** - Smooth navigation between main, chat, and settings screens  
+- **Keyboard Shortcuts** - All essential keys for CLI interaction:
+  - Ctrl+C, Ctrl+V for copy/paste operations
+  - Tab for auto-completion suggestions
+  - Enter to send commands
+  - Esc, Arrow Up/Down for command history
+  - Backspace for editing
+- **Connection UI** - Server URL input and connection status display
+- **Settings Screen** - Placeholder for future features
 
-### Technical Features
-- **WebSocket Client**: Persistent connection with auto-reconnection
-- **Message Adapter**: Efficient RecyclerView with DiffUtil
-- **Lifecycle Management**: Proper Android activity/fragment lifecycle
-- **Error Handling**: Graceful degradation and user feedback
+### 🚧 In Development (Next Release)
+- **WebSocket Connection** - Real-time communication with copilot-cli server
+- **Chat Functionality** - Send/receive messages to/from copilot-cli
+- **Server Management** - Add, edit, and manage multiple servers
+- **Auto Updates** - Check for new app versions
+- **Dark Mode** - Theme switching functionality
+
+### 🔧 Technical Details
+- **Target SDK**: Android 12+ (API 31)
+- **Architecture**: Simplified MVP with findViewById (stable and reliable)
+- **Package**: `com.ssfdre38.cpcli.android.client`
+- **Build**: Gradle 8.2, Android Gradle Plugin 8.1.0
 
 ## 🖥️ Server Features
 
@@ -177,38 +187,44 @@ adb logcat | grep CopilotClient
 - **Android Docs**: UI components and architecture
 - **Server Docs**: Node.js implementation details
 
-## 🔮 Feature Status & Roadmap
+## 🔮 Development Roadmap
 
-### ✅ Implemented Features
-- [x] **Multi-server Support**: Connect to multiple Copilot instances with easy switching
-- [x] **Dark Mode**: Complete theme customization with system auto-detection
-- [x] **Chat History**: Persistent conversation storage per server (configurable limits 100-5000 messages)
-- [x] **Auto-updates**: Automatic update checking and download with version comparison
-- [x] **Offline Help**: Complete documentation and troubleshooting guide with search
-- [x] **Server Management**: Add, edit, delete, and organize servers with import/export
-- [x] **Quick Actions**: Common keystroke buttons for terminal operations (Ctrl+C, Tab, etc.)
-- [x] **Real-time Communication**: WebSocket-based instant messaging with auto-reconnection
-- [x] **Network Scanning**: Auto-discover servers on local network
-- [x] **Settings Management**: Comprehensive configuration options
-- [x] **Legal Compliance**: Proper trademark attributions and About page
-- [x] **Package Compliance**: Non-infringing package naming (com.ssfdre38.cpcli.android.client)
+### ✅ v1.1.2 - Stability Release (Current)
+- [x] **Fixed App Crashes** - Resolved critical startup and navigation issues
+- [x] **Stable UI Architecture** - Simplified, reliable findViewById-based approach
+- [x] **Keyboard Shortcuts** - Essential CLI interaction keys (Ctrl+C, Tab, Enter, Esc, Arrows)
+- [x] **Basic Navigation** - Main, Chat, and Settings screens working
+- [x] **Material Design 3** - Modern Android UI with proper theming
+- [x] **Android 12+ Support** - Target SDK 34, minimum API 31
+- [x] **Trademark Compliance** - Non-infringing package naming and proper attributions
 
-### 🚧 In Progress
-- [ ] **File Upload/Download**: Share code files with Copilot
-- [ ] **Voice Input**: Speech-to-text for hands-free coding
-- [ ] **Syntax Highlighting**: Code display with proper formatting
+### 🚧 v1.2.0 - Networking (Next Release)
+- [ ] **WebSocket Client** - Real-time connection to copilot-cli server
+- [ ] **Chat Functionality** - Send/receive messages to/from copilot-cli
+- [ ] **Connection Management** - Connect, disconnect, status indicators  
+- [ ] **Basic Error Handling** - Network timeouts and connection failures
+- [ ] **Message Display** - Simple chat interface with message history
 
-### 📋 Planned Features
-- [ ] **Multi-language**: Internationalization support (i18n)
-- [ ] **Push Notifications**: Background response alerts
-- [ ] **Message Encryption**: End-to-end security
-- [ ] **Offline Mode**: Cache responses for offline viewing
-- [ ] **Performance**: Optimize for low-bandwidth networks
-- [ ] **Analytics**: Usage tracking and insights (privacy-focused)
-- [ ] **Plugin System**: Extensible architecture for custom features
-- [ ] **Tablet UI**: Optimized interface for larger screens
-- [ ] **Keyboard Shortcuts**: Hardware keyboard support
-- [ ] **Custom Themes**: User-defined color schemes
+### 📋 v1.3.0 - Server Management
+- [ ] **Multi-server Support** - Add, edit, delete server configurations
+- [ ] **Server Discovery** - Auto-detect servers on local network
+- [ ] **Persistent Storage** - Save server settings and chat history
+- [ ] **Import/Export** - Backup and restore server configurations
+
+### 🎯 v1.4.0 - Enhanced Features  
+- [ ] **Dark Mode** - Theme switching with system detection
+- [ ] **Auto-updates** - Check for new app versions
+- [ ] **Offline Help** - Built-in documentation and troubleshooting
+- [ ] **Settings Management** - Comprehensive configuration options
+- [ ] **Performance Optimizations** - Better memory usage and speed
+
+### 🔮 Future Considerations
+- [ ] **File Operations** - Upload/download code files
+- [ ] **Voice Input** - Speech-to-text for hands-free interaction
+- [ ] **Syntax Highlighting** - Code display with proper formatting
+- [ ] **Push Notifications** - Background response alerts
+- [ ] **Tablet UI** - Optimized interface for larger screens
+- [ ] **Hardware Keyboard** - Enhanced shortcuts for external keyboards
 
 ### 🎯 Key Features Overview
 
