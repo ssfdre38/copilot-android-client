@@ -11,20 +11,39 @@ android {
         applicationId "com.ssfdre38.cpcli.android.client"
         minSdk 24  // Android 7.0 (API 24) and up for broader compatibility
         targetSdk 34  // Target SDK 34 for better compatibility
-        versionCode 15
-        versionName "1.5.0"
+        versionCode 16
+        versionName "1.5.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+        release {
+            // For release builds, we'll use the debug keystore for simplicity
+            // In production, you should use a proper release keystore
+            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             debuggable true
             minifyEnabled false
+            signingConfig signingConfigs.debug
         }
     }
     
