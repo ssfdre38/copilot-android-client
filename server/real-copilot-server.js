@@ -140,12 +140,12 @@ class RealCopilotIntegrationServer {
     }
     
     setupWebSocket() {
-        this.server = this.app.listen(this.port, () => {
+        this.server = this.app.listen(this.port, '0.0.0.0', () => {
             console.log(`🚀 Real Copilot Integration Server listening on port ${this.port}`);
-            console.log(`📡 WebSocket endpoint: ws://localhost:${this.port}`);
-            console.log(`🔍 Health check: http://localhost:${this.port}/health`);
-            console.log(`🤖 Copilot status: http://localhost:${this.port}/copilot/status`);
-            console.log(`📊 Sessions info: http://localhost:${this.port}/sessions`);
+            console.log(`📡 WebSocket endpoint: ws://0.0.0.0:${this.port}`);
+            console.log(`🔍 Health check: http://0.0.0.0:${this.port}/health`);
+            console.log(`🤖 Copilot status: http://0.0.0.0:${this.port}/copilot/status`);
+            console.log(`📊 Sessions info: http://0.0.0.0:${this.port}/sessions`);
         });
         
         this.wss = new WebSocket.Server({ server: this.server });
