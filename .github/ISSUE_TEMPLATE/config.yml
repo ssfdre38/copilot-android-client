@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/ssfdre38/copilot-android-client/blob/main/README.md
+    about: Check our documentation for setup guides and FAQ
+  - name: 💬 Discussions
+    url: https://github.com/ssfdre38/copilot-android-client/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🔒 Security Issue
+    url: https://github.com/ssfdre38/copilot-android-client/security/advisories/new
+    about: Report security vulnerabilities privately

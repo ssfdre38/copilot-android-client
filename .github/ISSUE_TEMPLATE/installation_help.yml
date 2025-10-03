@@ -1,0 +1,76 @@
+name: Installation Help
+description: Get help with installing or setting up the Copilot Android Client
+title: "[HELP] "
+labels: ["question", "help-wanted"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help with installation or setup? We're here to help!
+
+  - type: dropdown
+    id: help-type
+    attributes:
+      label: What do you need help with?
+      options:
+        - Installing the APK
+        - Setting up the server
+        - Connecting to the server
+        - App configuration
+        - Permission issues
+        - Other installation issue
+    validations:
+      required: true
+
+  - type: input
+    id: android-device
+    attributes:
+      label: Android Device
+      description: What device and Android version are you using?
+      placeholder: e.g., Samsung Galaxy S23, Android 15
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: Issue Description
+      description: Describe the problem you're experiencing in detail.
+      placeholder: What's not working? What error messages do you see?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-taken
+    attributes:
+      label: Steps You've Tried
+      description: What have you already tried to fix this issue?
+      placeholder: |
+        1. Downloaded APK from releases
+        2. Enabled unknown sources
+        3. Tried to install...
+    validations:
+      required: false
+
+  - type: textarea
+    id: server-details
+    attributes:
+      label: Server Details (if applicable)
+      description: If this is about server connection, provide server details
+      placeholder: |
+        - Server URL: 
+        - Port: 
+        - Protocol: (HTTP/HTTPS/WebSocket)
+        - Any firewalls or network restrictions:
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages
+      description: Include any error messages you see (exact text if possible)
+    validations:
+      required: false

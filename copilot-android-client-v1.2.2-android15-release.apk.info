@@ -1,0 +1,16 @@
+APK Information:
+================
+Version: 1.2.2
+Version Code: 10
+Target SDK: 35 (Android 15)
+Min SDK: 31 (Android 12)
+Built: Fri Oct  3 01:22:22 UTC 2025
+Signed: Debug signature for compatibility
+Package: com.ssfdre38.cpcli.android.client
+
+Installation Notes:
+===================
+- Compatible with Android 12 and above
+- Optimized for Android 15
+- Enable "Install from Unknown Sources" 
+- Self-signed for compatibility

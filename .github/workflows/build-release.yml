@@ -1,0 +1,112 @@
+name: Build and Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.2.2)'
+        required: true
+        default: '1.2.2'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Build Android 15 APK
+      run: ./build-android15-apk.sh
+      
+    - name: Get version info
+      id: version
+      run: |
+        VERSION=$(grep "versionName" app/build.gradle | grep -o '"[^"]*"' | tr -d '"')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        release_name: Copilot Android Client v${{ steps.version.outputs.version }}
+        body: |
+          ## 🚀 Copilot Android Client v${{ steps.version.outputs.version }}
+          
+          ### 📱 Android 15 Compatible Release
+          
+          **What's New:**
+          - ✅ Android 15 (API 35) compatibility
+          - ✅ Improved APK signing for better installation
+          - ✅ Updated dependencies for latest Android
+          - ✅ Enhanced stability and performance
+          
+          **System Requirements:**
+          - Android 12 (API 31) or higher
+          - Optimized for Android 15
+          
+          **Installation Instructions:**
+          1. Enable "Install Unknown Apps" in Android settings
+          2. Download the APK below
+          3. Install on your device
+          4. Configure your Copilot server URL in the app
+          
+          **Server Setup:**
+          Use the included server scripts to set up your Copilot CLI server.
+          
+          ### 🔧 Technical Details
+          - Target SDK: 35 (Android 15)
+          - Min SDK: 31 (Android 12)
+          - Package: com.ssfdre38.cpcli.android.client
+          - Signed with debug key for compatibility
+          
+        draft: false
+        prerelease: false
+        
+    - name: Upload APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-android15-release.apk
+        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-android15-release.apk
+        asset_content_type: application/vnd.android.package-archive
+        
+    - name: Upload APK Info to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./copilot-android-client-v${{ steps.version.outputs.version }}-android15-release.apk.info
+        asset_name: copilot-android-client-v${{ steps.version.outputs.version }}-release-info.txt
+        asset_content_type: text/plain
