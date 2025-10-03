@@ -61,8 +61,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonStartChat.setOnClickListener {
-            val intent = Intent(this, ChatActivity::class.java)
-            startActivity(intent)
+            try {
+                val intent = Intent(this, ChatActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
 
         buttonSettings.setOnClickListener {
