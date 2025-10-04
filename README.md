@@ -1,102 +1,222 @@
-# 🚀 Copilot Android Client
+# 🤖 GitHub Copilot CLI - Android Client v4.0.2
 
-**A bulletproof native Android application for GitHub Copilot CLI interaction with dynamic layouts that adapt to any screen size.**
+A modern Android client for GitHub Copilot CLI, featuring a sleek UI, multi-server support, and enhanced security.
 
-## 🎯 **Current Status: Production Ready v2.2.0**
+## 🚀 Latest Version: 4.0.2 (CRITICAL FIXES FINAL)
 
-✅ **BULLETPROOF FIX** - Specially optimized for Samsung Tab A9+ and T-Mobile Revvl 9 Pro  
-✅ **CRASH-FREE OPERATION** - 100% programmatic UI eliminates all layout crashes  
-✅ **UNIVERSAL COMPATIBILITY** - Auto-adapts to phones, tablets, and any Android device  
-✅ **DYNAMIC LAYOUTS** - Responsive design that scales perfectly to any screen size  
+**Release Date:** October 4, 2024  
+**Build:** `versionCode 39`  
+**Status:** ✅ **PRODUCTION READY** - Tested and verified crash-free
 
-## 📱 **Latest Release - v2.2.0 BULLETPROOF EDITION**
+### 🔧 What's New in v4.0.2
+- **🔒 SECURITY FIX**: Removed all hardcoded domain references for user privacy
+- **🗑️ BUG FIX**: Enhanced server deletion functionality with proper error handling
+- **🎨 NEW**: Custom app icon with modern GitHub Copilot CLI robot/AI theme
+- **✅ TESTED**: App verified to start without crashes in Android emulator
+- **🔧 IMPROVED**: Better error handling and user feedback throughout
+- **📱 ENHANCED**: Version consistency and build process improvements
 
-### 🎯 **Device-Specific Fix**
-**Specially tested and optimized for:**
-- ✅ **Samsung Tab A9+** - Perfect tablet experience with One UI compatibility
-- ✅ **T-Mobile Revvl 9 Pro** - Crash-free operation with carrier ROM support
-- ✅ **Universal Android** - Works on ANY Android device (7.0+)
+## ✨ Key Features
 
-### 📦 **Download**
-**[Latest APK: v2.2.0 BULLETPROOF](https://github.com/ssfdre38/copilot-android-client/releases)**
-- **File**: `copilot-android-client-v2.2.0-BULLETPROOF-samsung-tmobile-fix.apk`
-- **Size**: 6.0 MB
-- **Android**: 7.0+ (API 24) to Android 15
-- **Status**: 🛡️ **BULLETPROOF** - Zero crashes guaranteed
+### 🖥️ **Multi-Server Support**
+- Connect to multiple Copilot CLI servers simultaneously
+- Easy server addition, editing, and deletion
+- Secure server configuration storage
+- Active server switching with one tap
 
-## ✨ **Key Features**
+### 🎨 **Modern UI Design**
+- Clean, programmatic UI without XML dependencies
+- Universal design that works on phones and tablets
+- Smooth animations and transitions
+- Material Design principles
 
-### 🛡️ **Bulletproof Architecture**
-- **100% Programmatic UI** - No XML layout dependencies to crash
-- **Triple-layer Safety** - Multiple fallback modes if anything fails
-- **Dynamic Screen Adaptation** - Auto-scales for any device size
-- **Device-agnostic Design** - Works identically on all Android variants
+### 🌙 **Dark Mode**
+- System-aware theme switching
+- Smooth dark/light mode transitions
+- No flicker or UI disruption
+- Consistent theme across all screens
 
-### 💬 **Chat Features**
-- **Real-time Messaging** - Direct GitHub Copilot CLI interaction
-- **Message History** - Persistent conversation storage
-- **Command Shortcuts** - Ctrl+C, Tab, Enter, Arrow keys
-- **Auto-completion** - Smart command suggestions
+### 🔒 **Security Features**
+- SSL/TLS WebSocket support (wss://)
+- No hardcoded server URLs for privacy
+- Secure local storage of configurations
+- Optional secure connections
 
-### ⚙️ **Settings & Customization**
-- **Dark Mode** - System-aware theme switching with immediate application
-- **Dynamic Layout** - Responsive settings that adapt to screen size
-- **Server Management** - Multiple connection configurations
-- **Data Management** - Import/export, clear data options
+### 💬 **Chat Interface**
+- Real-time communication with Copilot CLI
+- Message history and persistence
+- Clean, readable message formatting
+- Easy copy/paste functionality
 
-### 📱 **Universal Compatibility**
-- **Small Phones** (< 360dp) - Compact, optimized layout
-- **Standard Phones** (360-600dp) - Perfect mobile experience  
-- **Tablets** (> 600dp) - Large, spacious interface
-- **Foldables** - Automatic adaptation to unusual screen sizes
+### ⚙️ **Settings & Help**
+- Comprehensive settings menu
+- Offline help documentation
+- About page with version info
+- Easy data management options
 
-## 🚀 **Quick Start**
+## 📱 System Requirements
 
-### 📲 **Installation**
+- **Android 7.0** (API 24) or higher
+- **Network access** for WebSocket connections
+- **~6MB** storage space
+- **Recommended:** Android 10+ for best experience
+
+## 🔧 Installation
+
+### Option 1: Download APK (Recommended)
+1. Download the latest APK: `github-copilot-cli-v4.0.2-CRITICAL-FIXES-FINAL.apk`
+2. Enable "Install from unknown sources" in Android settings
+3. Install the APK file
+4. Open the app and add your Copilot CLI server
+
+### Option 2: Build from Source
 ```bash
-# Download the bulletproof APK
-wget https://github.com/ssfdre38/copilot-android-client/releases/download/v2.2.0/copilot-android-client-v2.2.0-BULLETPROOF-samsung-tmobile-fix.apk
-
-# Install on device
-adb install copilot-android-client-v2.2.0-BULLETPROOF-samsung-tmobile-fix.apk
+git clone https://github.com/ssfdre38/copilot-android-client.git
+cd copilot-android-client
+./gradlew assembleRelease
 ```
 
-### 🔧 **First Launch**
-1. **Enable "Install from unknown sources"** in Android settings
-2. **Install the APK** - Should install without any errors
-3. **Launch app** - Instant startup, no crashes
-4. **Configure server** - Enter your Copilot CLI server details
-5. **Start chatting** - Begin your AI-assisted coding session
+## 🚀 Quick Start
+## 🚀 Quick Start
 
-## 🔧 **Technical Architecture**
+### 📲 First Launch
+1. **Install the APK** - Should install without any errors  
+2. **Launch app** - Instant startup, no crashes
+3. **Add Server** - Tap "🖥️ Manage Servers" → "➕ Add New Server"
+4. **Configure Connection**:
+   - **Name**: Your server name (e.g., "My Copilot Server")
+   - **URL**: Your server domain or IP (e.g., "my-server.com")
+   - **Port**: Server port (e.g., 3002 for HTTP, 8443 for HTTPS)
+   - **SSL**: Enable for secure connections (wss://)
+5. **Select Server** - Tap "Select" on your configured server
+6. **Start Chatting** - Tap "💬 Start Chat" to begin
 
-### 📐 **Dynamic Layout System**
-```kotlin
-// Auto-adapts to any screen size
-private fun calculateSafeTextSize(baseSizeSp: Float): Float {
-    val screenWidthDp = resources.displayMetrics.widthPixels / resources.displayMetrics.density
-    val scaleFactor = when {
-        screenWidthDp < 360 -> 0.85f // Small phones
-        screenWidthDp > 600 -> 1.15f // Tablets
-        else -> 1.0f // Standard phones
-    }
-    return baseSizeSp * scaleFactor
-}
+### 🖥️ Server Configuration Examples
+```
+HTTP Connection:
+- URL: localhost
+- Port: 3002  
+- SSL: Disabled (ws://)
+
+HTTPS Connection:
+- URL: my-copilot-server.com
+- Port: 8443
+- SSL: Enabled (wss://)
 ```
 
-### 🛡️ **Crash Prevention**
-```kotlin
-// Multiple safety layers
-private fun startChatSafely() {
-    try {
-        val intent = Intent(this, ChatActivity::class.java)
-        startActivity(intent)
-    } catch (e: Exception) {
-        // Graceful fallback
-        Toast.makeText(this, "Chat error: ${e.message}", Toast.LENGTH_LONG).show()
-    }
-}
+## 🔧 Technical Details
+
+### 🏗️ Architecture
+- **Language**: Kotlin 100%
+- **Min SDK**: API 24 (Android 7.0)
+- **Target SDK**: API 34 (Android 14)
+- **UI**: Programmatic (no XML layouts)
+- **Networking**: OkHttp WebSocket + Retrofit
+- **Storage**: SharedPreferences with encryption
+
+### 📦 Dependencies
+- AndroidX Core, AppCompat, Material Design
+- OkHttp 4.12.0 for networking
+- WebSocket support for real-time communication
+- Markwon for markdown rendering
+- Gson for JSON serialization
+
+### 🛡️ Security Features
+- Secure WebSocket connections (wss://)
+- No hardcoded server URLs
+- Local encrypted storage
+- Certificate validation
+- Network security configuration
+
+## 🐛 Troubleshooting
+
+### Common Issues
+**Q: App won't connect to server**
+- Verify server URL and port are correct
+- Check if SSL is properly configured
+- Ensure server is running and accessible
+
+**Q: Server deletion not working**
+- Try force-closing and reopening the app
+- The fix in v4.0.2 should resolve this issue
+
+**Q: Dark mode flickering**
+- Fixed in v4.0.2 with improved theme management
+
+### 📱 Device Compatibility
+- ✅ **Phones**: All Android phones 7.0+
+- ✅ **Tablets**: Perfect tablet experience
+- ✅ **Foldables**: Auto-adapts to folding screens
+- ✅ **Android TV**: Basic support (not optimized)
+
+## 📚 Development
+
+### 🛠️ Building from Source
+```bash
+# Clone repository
+git clone https://github.com/ssfdre38/copilot-android-client.git
+cd copilot-android-client
+
+# Build debug APK
+./gradlew assembleDebug
+
+# Build release APK  
+./gradlew assembleRelease
+
+# Test in emulator
+./test-apk-emulator.sh
 ```
+
+### 🧪 Testing
+- Automated emulator testing included
+- Manual testing on Samsung Tab A9+
+- Manual testing on T-Mobile Revvl 9 Pro
+- Cross-device compatibility verified
+
+## 📝 Changelog
+
+### v4.0.2 (2024-10-04) - CRITICAL FIXES FINAL
+- 🔒 **SECURITY**: Removed hardcoded domain references
+- 🗑️ **FIX**: Enhanced server deletion functionality
+- 🎨 **NEW**: Custom app icon with robot/AI theme
+- ✅ **VERIFIED**: Crash-free operation in emulator
+- 🔧 **IMPROVED**: Better error handling throughout
+
+### v4.0.1 (2024-10-03)
+- 📱 Modern UI implementation complete
+- 🌙 Dark mode improvements
+- 🖥️ Multi-server support enhancements
+
+### Previous Versions
+- v3.x.x: Multi-server support development
+- v2.x.x: Bulletproof architecture implementation
+- v1.x.x: Initial release and core features
+
+## 🤝 Contributing
+
+### 📋 TODO List
+See `COMPREHENSIVE_TODO_LIST_FINAL_SCAN.md` for current development priorities.
+
+### 🐛 Bug Reports
+Please create an issue with:
+- Device model and Android version
+- Exact steps to reproduce
+- Screenshots if applicable
+- App version from Settings → About
+
+## 📄 License
+
+This project is licensed under the MIT License. See LICENSE file for details.
+
+## 🔗 Links
+
+- **GitHub Repository**: https://github.com/ssfdre38/copilot-android-client
+- **Issue Tracker**: https://github.com/ssfdre38/copilot-android-client/issues
+- **Releases**: https://github.com/ssfdre38/copilot-android-client/releases
+
+---
+
+**Made with ❤️ for the GitHub Copilot CLI community**
 
 ## 🌟 **What Makes v2.2.0 Special**
 
