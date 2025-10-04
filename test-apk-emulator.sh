@@ -45,13 +45,13 @@ test_apk() {
         
         # Try to launch the app
         echo -e "${YELLOW}Launching app...${NC}"
-        adb shell am start -n com.ssfdre38.cpcli_android.client/.MainActivity
+        adb shell am start -n com.ssfdre38.cpcli.android.client/.MainActivity
         
         # Wait a moment for app to load
         sleep 5
         
         # Check if app is running
-        APP_PID=$(adb shell pidof com.ssfdre38.cpcli_android.client)
+        APP_PID=$(adb shell pidof com.ssfdre38.cpcli.android.client)
         if [ ! -z "$APP_PID" ]; then
             echo -e "${GREEN}App started successfully! PID: $APP_PID${NC}"
             

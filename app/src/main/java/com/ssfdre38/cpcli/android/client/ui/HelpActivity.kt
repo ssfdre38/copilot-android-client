@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.widget.*
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class HelpActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         
         try {

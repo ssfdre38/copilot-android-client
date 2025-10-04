@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import android.widget.TextView
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class AboutActivity : AppCompatActivity() {
 
@@ -18,6 +19,8 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var buttonLicense: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
 
@@ -41,8 +44,20 @@ class AboutActivity : AppCompatActivity() {
     }
     
     private fun setupContent() {
-        // Set version info
-        textVersion.text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        // Set version info from app build config
+        try {
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            val versionName = packageInfo.versionName ?: "Unknown"
+            val versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                packageInfo.longVersionCode.toString()
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.versionCode.toString()
+            }
+            textVersion.text = "Version $versionName ($versionCode)"
+        } catch (e: Exception) {
+            textVersion.text = "Version information unavailable"
+        }
         
         // Set trademark notices
         textGitHubTrademark.text = getString(R.string.github_trademark)

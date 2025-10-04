@@ -10,7 +10,7 @@ class AboutActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         // Apply theme before calling super.onCreate to prevent flicker
-        ThemeManager.applyTheme(this)
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         
         try {
@@ -40,7 +40,7 @@ class AboutActivity : AppCompatActivity() {
         val logoCard = createSectionCard("🤖 Application")
         val logoContent = """
         **GitHub Copilot CLI for Android**
-        Version: 3.2.2 (Build 34)
+        Version: 3.2.3 (Build 35)
         
         A mobile client for connecting to GitHub Copilot CLI servers, enabling AI-powered coding assistance on Android devices.
         

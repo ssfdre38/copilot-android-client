@@ -154,9 +154,21 @@ class ServerAdapter(
     override fun getItemCount(): Int = servers.size
     
     fun updateServers(newServers: List<ServerConfig>) {
+        val oldSize = servers.size
         servers.clear()
         servers.addAll(newServers)
-        notifyDataSetChanged() // This should trigger UI update
+        
+        // Notify of data change based on the specific changes
+        if (newServers.size < oldSize) {
+            // A server was deleted
+            notifyDataSetChanged()
+        } else if (newServers.size > oldSize) {
+            // A server was added
+            notifyItemInserted(newServers.size - 1)
+        } else {
+            // Servers were modified
+            notifyDataSetChanged()
+        }
     }
     
     fun setActiveServer(serverId: String?) {

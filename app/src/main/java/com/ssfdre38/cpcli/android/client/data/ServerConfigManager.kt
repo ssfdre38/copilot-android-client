@@ -53,35 +53,49 @@ class ServerConfigManager(context: Context) {
     }
     
     fun deleteServer(serverId: String): Boolean {
-        try {
+        return try {
             val servers = getAllServers().toMutableList()
             val initialSize = servers.size
             
-            // Find and remove the server
-            val removed = servers.removeAll { it.id == serverId }
-            
-            if (removed) {
-                // Save the updated server list
-                saveServers(servers)
-                
-                // If deleted server was active, clear active server
-                if (preferences.getString(KEY_ACTIVE_SERVER, null) == serverId) {
-                    setActiveServer(null)
-                }
-                
-                // Force save and verify the deletion worked
-                preferences.edit().apply()
-                
-                val newServers = getAllServers()
-                val finalSize = newServers.size
-                
-                // Debug: Check if deletion actually worked
-                return finalSize < initialSize
+            // Find the server to delete
+            val serverToDeleteIndex = servers.indexOfFirst { it.id == serverId }
+            if (serverToDeleteIndex == -1) {
+                return false
             }
-            return false
+            
+            // Remove the server by index to ensure it's actually removed
+            val removedServer = servers.removeAt(serverToDeleteIndex)
+            
+            // If deleted server was active, clear active server preference immediately
+            val activeServerId = preferences.getString(KEY_ACTIVE_SERVER, null)
+            if (activeServerId == serverId) {
+                preferences.edit()
+                    .remove(KEY_ACTIVE_SERVER)
+                    .commit()
+            }
+            
+            // Save the updated server list with immediate write
+            val saveSuccess = try {
+                val json = gson.toJson(servers)
+                preferences.edit()
+                    .putString(KEY_SERVERS, json)
+                    .commit() // Use commit() for immediate persistence
+                true
+            } catch (e: Exception) {
+                false
+            }
+            
+            if (saveSuccess) {
+                // Verify the deletion by reloading and checking
+                val reloadedServers = getAllServers()
+                val deletionSuccessful = reloadedServers.none { it.id == serverId } && 
+                                       reloadedServers.size == (initialSize - 1)
+                deletionSuccessful
+            } else {
+                false
+            }
         } catch (e: Exception) {
-            // If any error occurs, return false
-            return false
+            false
         }
     }
     

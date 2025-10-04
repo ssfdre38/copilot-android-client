@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var textHelpContent: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help)
         

@@ -4,14 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import android.view.Gravity
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.ssfdre38.cpcli.android.client.data.ServerConfig
 import com.ssfdre38.cpcli.android.client.data.ServerConfigManager
+import com.ssfdre38.cpcli.android.client.ui.ModernUIManager
 import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class SettingsActivity : AppCompatActivity() {
     
-    private lateinit var darkModeSwitch: Switch
+    private lateinit var themeModeSpinner: Spinner
     private lateinit var autoConnectSwitch: Switch
     private lateinit var notificationsSwitch: Switch
     private lateinit var chatHistoryLimitSpinner: Spinner
@@ -20,111 +25,123 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var clearDataButton: Button
     private lateinit var exportConfigButton: Button
     private lateinit var aboutButton: Button
+    private lateinit var mainLayout: LinearLayout
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply theme before calling super.onCreate to prevent flicker
-        ThemeManager.applyTheme(this)
+        // Apply modern theme
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         
         try {
-            setupUI()
+            createModernSettingsLayout()
             loadSettings()
+            setupWindowInsets()
+            
+            // Apply modern theme to all UI elements
+            ThemeManager.applyThemeToView(this, mainLayout)
+            
         } catch (e: Exception) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
         }
     }
     
-    private fun setupUI() {
+    private fun createModernSettingsLayout() {
         val scrollView = ScrollView(this)
-        val mainLayout = LinearLayout(this).apply {
+        
+        mainLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 20, 20, 20)
+            setPadding(
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM)
+            )
         }
+        ModernUIManager.setWindowBackground(this, mainLayout)
         
         // Title
         val titleText = TextView(this).apply {
             text = "⚙️ Settings"
-            textSize = 24f
             gravity = Gravity.CENTER
-            setPadding(0, 0, 0, 30)
-        }
-        
-        // Appearance Section
-        val appearanceCard = createSectionCard("🎨 Appearance")
-        val appearanceLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-        }
-        
-        // Dark Mode
-        val darkModeLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-        
-        val darkModeLabel = TextView(this).apply {
-            text = "Dark Mode"
-            textSize = 16f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        
-        darkModeSwitch = Switch(this).apply {
-            setOnCheckedChangeListener { _, isChecked ->
-                // Show immediate feedback
-                Toast.makeText(this@SettingsActivity, "Applying theme...", Toast.LENGTH_SHORT).show()
-                
-                // Set theme with smooth transition
-                ThemeManager.setDarkModeEnabled(this@SettingsActivity, isChecked)
-                
-                // Show confirmation
-                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                    Toast.makeText(this@SettingsActivity, "✅ Theme applied successfully!", Toast.LENGTH_SHORT).show()
-                }, 300)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.LARGE))
             }
         }
+        ModernUIManager.styleTextView(this, titleText, ModernUIManager.TextType.HEADLINE_MEDIUM)
         
-        darkModeLayout.addView(darkModeLabel)
-        darkModeLayout.addView(darkModeSwitch)
+        // Appearance Section
+        val appearanceCard = createModernSectionCard("🎨 Appearance")
+        
+        // Theme mode selection
+        val themeModeLayout = createSettingRow("Theme Mode")
+        val themeModeOptions = arrayOf("System Default", "Light", "Dark")
+        themeModeSpinner = Spinner(this).apply {
+            adapter = ArrayAdapter(this@SettingsActivity, android.R.layout.simple_spinner_item, themeModeOptions).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                    val themeMode = when (position) {
+                        0 -> ThemeManager.ThemeMode.SYSTEM
+                        1 -> ThemeManager.ThemeMode.LIGHT
+                        2 -> ThemeManager.ThemeMode.DARK
+                        else -> ThemeManager.ThemeMode.SYSTEM
+                    }
+                    
+                    // Apply theme with smooth transition
+                    Toast.makeText(this@SettingsActivity, "Applying theme...", Toast.LENGTH_SHORT).show()
+                    ThemeManager.setThemeMode(this@SettingsActivity, themeMode)
+                    
+                    // Show confirmation
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@SettingsActivity, "✅ Theme applied successfully!", Toast.LENGTH_SHORT).show()
+                    }, 300)
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        }
+        themeModeLayout.addView(themeModeSpinner)
+        appearanceCard.addView(themeModeLayout)
         
         // Connection Section
-        val connectionCard = createSectionCard("🌐 Connection")
-        val connectionLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-        }
+        val connectionCard = createModernSectionCard("🌐 Connection")
         
         // Auto Connect
-        val autoConnectLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-        
-        val autoConnectLabel = TextView(this).apply {
-            text = "Auto-connect to last server"
-            textSize = 16f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        
+        val autoConnectLayout = createSettingRow("Auto-connect to last server")
         autoConnectSwitch = Switch(this).apply {
             setOnCheckedChangeListener { _, isChecked ->
                 saveAutoConnectSetting(isChecked)
             }
         }
-        
-        autoConnectLayout.addView(autoConnectLabel)
         autoConnectLayout.addView(autoConnectSwitch)
+        connectionCard.addView(autoConnectLayout)
         
         // Server Timeout
+        val timeoutContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+            )
+        }
+        
         val timeoutLabel = TextView(this).apply {
             text = "Connection Timeout"
-            textSize = 16f
-            setPadding(0, 20, 0, 10)
         }
+        ModernUIManager.styleTextView(this, timeoutLabel, ModernUIManager.TextType.BODY_LARGE)
         
         serverTimeoutLabel = TextView(this).apply {
             text = "30 seconds"
-            textSize = 14f
             gravity = Gravity.CENTER
+            setPadding(0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL), 0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL))
         }
+        ModernUIManager.styleTextView(this, serverTimeoutLabel, ModernUIManager.TextType.BODY_MEDIUM)
         
         serverTimeoutSeekBar = SeekBar(this).apply {
             max = 120 // 120 seconds max
@@ -142,44 +159,39 @@ class SettingsActivity : AppCompatActivity() {
             })
         }
         
+        timeoutContainer.addView(timeoutLabel)
+        timeoutContainer.addView(serverTimeoutLabel)
+        timeoutContainer.addView(serverTimeoutSeekBar)
+        connectionCard.addView(timeoutContainer)
+        
         // Notifications Section
-        val notificationsCard = createSectionCard("🔔 Notifications")
-        val notificationsLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-        }
-        
-        val notificationsToggleLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-        
-        val notificationsLabel = TextView(this).apply {
-            text = "Show connection notifications"
-            textSize = 16f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        
+        val notificationsCard = createModernSectionCard("🔔 Notifications")
+        val notificationsLayout = createSettingRow("Show connection notifications")
         notificationsSwitch = Switch(this).apply {
             setOnCheckedChangeListener { _, isChecked ->
                 saveNotificationsSetting(isChecked)
             }
         }
-        
-        notificationsToggleLayout.addView(notificationsLabel)
-        notificationsToggleLayout.addView(notificationsSwitch)
+        notificationsLayout.addView(notificationsSwitch)
+        notificationsCard.addView(notificationsLayout)
         
         // Chat History Section
-        val historyCard = createSectionCard("💬 Chat History")
-        val historyLayout = LinearLayout(this).apply {
+        val historyCard = createModernSectionCard("💬 Chat History")
+        val historyContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+            )
         }
         
         val historyLimitLabel = TextView(this).apply {
             text = "Maximum messages to keep"
-            textSize = 16f
-            setPadding(0, 0, 0, 10)
+            setPadding(0, 0, 0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL))
         }
+        ModernUIManager.styleTextView(this, historyLimitLabel, ModernUIManager.TextType.BODY_LARGE)
         
         val historyOptions = arrayOf("100", "500", "1000", "2000", "Unlimited")
         chatHistoryLimitSpinner = Spinner(this).apply {
@@ -203,12 +215,12 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         
+        historyContainer.addView(historyLimitLabel)
+        historyContainer.addView(chatHistoryLimitSpinner)
+        historyCard.addView(historyContainer)
+        
         // Data Management Section
-        val dataCard = createSectionCard("🗂️ Data Management")
-        val dataLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-        }
+        val dataCard = createModernSectionCard("🗂️ Data Management")
         
         clearDataButton = Button(this).apply {
             text = "🗑️ Clear All Chat History"
@@ -216,10 +228,16 @@ class SettingsActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 0, 0, 10)
+                setMargins(
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+                )
             }
             setOnClickListener { clearAllData() }
         }
+        ModernUIManager.styleButton(this, clearDataButton, ModernUIManager.ButtonType.SECONDARY)
         
         exportConfigButton = Button(this).apply {
             text = "📤 Export Server Configuration"
@@ -227,30 +245,44 @@ class SettingsActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 0, 0, 10)
+                setMargins(
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    0,
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+                )
             }
             setOnClickListener { exportConfiguration() }
         }
+        ModernUIManager.styleButton(this, exportConfigButton, ModernUIManager.ButtonType.SECONDARY)
+        
+        dataCard.addView(clearDataButton)
+        dataCard.addView(exportConfigButton)
         
         // About Section
-        val aboutCard = createSectionCard("ℹ️ About")
-        val aboutLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-        }
+        val aboutCard = createModernSectionCard("ℹ️ About")
         
         aboutButton = Button(this).apply {
             text = "📖 About GitHub Copilot CLI"
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                setMargins(
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                    ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+                )
+            }
             setOnClickListener { 
-                // Open dedicated About activity instead of Help
-                val intent = android.content.Intent(this@SettingsActivity, AboutActivity::class.java)
+                val intent = Intent(this@SettingsActivity, AboutActivity::class.java)
                 startActivity(intent)
             }
         }
+        ModernUIManager.styleButton(this, aboutButton, ModernUIManager.ButtonType.TEXT)
+        
+        aboutCard.addView(aboutButton)
         
         // Back button
         val backButton = Button(this).apply {
@@ -259,34 +291,11 @@ class SettingsActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 30, 0, 0)
+                setMargins(0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.LARGE), 0, 0)
             }
             setOnClickListener { finish() }
         }
-        
-        // Assemble sections
-        appearanceLayout.addView(darkModeLayout)
-        appearanceCard.addView(appearanceLayout)
-        
-        connectionLayout.addView(autoConnectLayout)
-        connectionLayout.addView(timeoutLabel)
-        connectionLayout.addView(serverTimeoutLabel)
-        connectionLayout.addView(serverTimeoutSeekBar)
-        connectionCard.addView(connectionLayout)
-        
-        notificationsLayout.addView(notificationsToggleLayout)
-        notificationsCard.addView(notificationsLayout)
-        
-        historyLayout.addView(historyLimitLabel)
-        historyLayout.addView(chatHistoryLimitSpinner)
-        historyCard.addView(historyLayout)
-        
-        dataLayout.addView(clearDataButton)
-        dataLayout.addView(exportConfigButton)
-        dataCard.addView(dataLayout)
-        
-        aboutLayout.addView(aboutButton)
-        aboutCard.addView(aboutLayout)
+        ModernUIManager.styleButton(this, backButton, ModernUIManager.ButtonType.PRIMARY)
         
         // Add all to main layout
         mainLayout.addView(titleText)
@@ -302,33 +311,83 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(scrollView)
     }
     
-    private fun createSectionCard(title: String): LinearLayout {
+    private fun createModernSectionCard(title: String): LinearLayout {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(0xFFF5F5F5.toInt())
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 10, 0, 10)
+                setMargins(0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL), 0, ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL))
             }
         }
+        ModernUIManager.styleContainer(this, card)
         
         val titleView = TextView(this).apply {
             text = title
-            textSize = 18f
-            setPadding(16, 16, 16, 8)
+            setPadding(
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+            )
         }
+        ModernUIManager.styleTextView(this, titleView, ModernUIManager.TextType.TITLE_MEDIUM)
         
         card.addView(titleView)
         return card
     }
     
+    private fun createSettingRow(labelText: String): LinearLayout {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            setPadding(
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@SettingsActivity, ModernUIManager.Spacing.SMALL)
+            )
+        }
+        
+        val label = TextView(this).apply {
+            text = labelText
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        ModernUIManager.styleTextView(this, label, ModernUIManager.TextType.BODY_LARGE)
+        
+        row.addView(label)
+        return row
+    }
+    
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                left = ModernUIManager.dpToPx(this, ModernUIManager.Spacing.MEDIUM),
+                top = systemBars.top + ModernUIManager.dpToPx(this, ModernUIManager.Spacing.SMALL),
+                right = ModernUIManager.dpToPx(this, ModernUIManager.Spacing.MEDIUM),
+                bottom = systemBars.bottom + ModernUIManager.dpToPx(this, ModernUIManager.Spacing.SMALL)
+            )
+            insets
+        }
+    }
+    
     private fun loadSettings() {
         val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
         
-        // Load dark mode from ThemeManager instead of app_settings
-        darkModeSwitch.isChecked = ThemeManager.isDarkModeEnabled(this)
+        // Load theme mode from modern ThemeManager
+        val currentThemeMode = ThemeManager.getThemeMode(this)
+        val spinnerPosition = when (currentThemeMode) {
+            ThemeManager.ThemeMode.SYSTEM -> 0
+            ThemeManager.ThemeMode.LIGHT -> 1
+            ThemeManager.ThemeMode.DARK -> 2
+        }
+        themeModeSpinner.setSelection(spinnerPosition)
+        
         autoConnectSwitch.isChecked = prefs.getBoolean("auto_connect", false)
         notificationsSwitch.isChecked = prefs.getBoolean("notifications", true)
         
@@ -337,7 +396,7 @@ class SettingsActivity : AppCompatActivity() {
         serverTimeoutLabel.text = "$timeout seconds"
         
         val historyLimit = prefs.getInt("chat_history_limit", 1000)
-        val spinnerPosition = when (historyLimit) {
+        val historySpinnerPosition = when (historyLimit) {
             100 -> 0
             500 -> 1
             1000 -> 2
@@ -345,10 +404,8 @@ class SettingsActivity : AppCompatActivity() {
             -1 -> 4
             else -> 2
         }
-        chatHistoryLimitSpinner.setSelection(spinnerPosition)
+        chatHistoryLimitSpinner.setSelection(historySpinnerPosition)
     }
-    
-    // Remove old dark mode methods - now handled by ThemeManager
     
     private fun saveAutoConnectSetting(enabled: Boolean) {
         getSharedPreferences("app_settings", MODE_PRIVATE)
@@ -397,7 +454,7 @@ class SettingsActivity : AppCompatActivity() {
                     loadingDialog.dismiss()
                     
                     try {
-                        // Clear chat history - use a simple approach
+                        // Clear chat history
                         val chatPrefs = getSharedPreferences("chat_history", MODE_PRIVATE)
                         chatPrefs.edit().clear().apply()
                         
@@ -405,7 +462,7 @@ class SettingsActivity : AppCompatActivity() {
                         getSharedPreferences("app_settings", MODE_PRIVATE).edit().clear().apply()
                         
                         // Clear theme preferences
-                        getSharedPreferences("theme_prefs", MODE_PRIVATE).edit().clear().apply()
+                        getSharedPreferences("modern_theme_prefs", MODE_PRIVATE).edit().clear().apply()
                         
                         Toast.makeText(this, "✅ All data cleared successfully", Toast.LENGTH_SHORT).show()
                         
@@ -476,8 +533,8 @@ class SettingsActivity : AppCompatActivity() {
         
         val messageText = TextView(this).apply {
             text = message
-            textSize = 16f
         }
+        ModernUIManager.styleTextView(this@SettingsActivity, messageText, ModernUIManager.TextType.BODY_LARGE)
         
         loadingLayout.addView(progressBar)
         loadingLayout.addView(messageText)
@@ -523,10 +580,5 @@ class SettingsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "Export failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        ThemeManager.resetThemeState()
     }
 }

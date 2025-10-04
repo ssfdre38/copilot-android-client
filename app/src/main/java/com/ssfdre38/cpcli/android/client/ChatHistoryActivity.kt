@@ -9,6 +9,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ssfdre38.cpcli.android.client.data.StorageManager
 import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 
 class ChatHistoryActivity : AppCompatActivity() {
 
@@ -19,6 +20,8 @@ class ChatHistoryActivity : AppCompatActivity() {
     private lateinit var chatAdapter: ChatAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_history)
 

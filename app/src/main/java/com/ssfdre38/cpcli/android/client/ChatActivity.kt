@@ -3,7 +3,11 @@ package com.ssfdre38.cpcli.android.client
 import android.os.Bundle
 import android.widget.*
 import android.view.Gravity
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ssfdre38.cpcli.android.client.data.ChatMessage
@@ -13,6 +17,7 @@ import com.ssfdre38.cpcli.android.client.network.CopilotWebSocketClient
 import com.ssfdre38.cpcli.android.client.network.WebSocketListener
 import com.ssfdre38.cpcli.android.client.network.WebSocketMessage
 import com.ssfdre38.cpcli.android.client.ui.ChatAdapter
+import com.ssfdre38.cpcli.android.client.ui.ModernUIManager
 import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import java.util.*
 
@@ -23,99 +28,205 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     private lateinit var sendButton: Button
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var storageManager: StorageManager
+    private lateinit var connectionStatus: TextView
+    private lateinit var mainLayout: LinearLayout
     private var webSocketClient: CopilotWebSocketClient? = null
-    private var connectionStatus: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply modern theme
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         
         try {
-            // Create layout programmatically to avoid complex XML layout issues
-            val mainLayout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(20, 20, 20, 20)
+            createModernChatLayout()
+            setupChat()
+            setupWindowInsets()
+            
+            // Apply modern theme to all UI elements
+            ThemeManager.applyThemeToView(this, mainLayout)
+            
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+    
+    private fun createModernChatLayout() {
+        // Main container
+        mainLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM),
+                ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM)
+            )
+        }
+        ModernUIManager.setWindowBackground(this, mainLayout)
+        
+        // Header container
+        val headerContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM))
             }
-            
-            // Title and connection status
-            val titleText = TextView(this).apply {
-                text = "🤖 GitHub Copilot CLI"
-                textSize = 20f
-                gravity = Gravity.CENTER
-                setPadding(0, 0, 0, 10)
+        }
+        ModernUIManager.styleContainer(this, headerContainer)
+        
+        // Title
+        val titleText = TextView(this).apply {
+            text = "🤖 GitHub Copilot CLI"
+            gravity = Gravity.CENTER
+        }
+        ModernUIManager.styleTextView(this, titleText, ModernUIManager.TextType.TITLE_LARGE)
+        
+        // Connection status
+        connectionStatus = TextView(this).apply {
+            text = "🔴 Connecting to server..."
+            gravity = Gravity.CENTER
+            setPadding(0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.SMALL), 0, 0)
+        }
+        ModernUIManager.styleTextView(this, connectionStatus, ModernUIManager.TextType.BODY_MEDIUM)
+        
+        headerContainer.addView(titleText)
+        headerContainer.addView(connectionStatus)
+        
+        // Chat messages container (RecyclerView)
+        val chatContainer = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1.0f // Take remaining space
+            ).apply {
+                setMargins(0, 0, 0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.MEDIUM))
             }
-            
-            connectionStatus = TextView(this).apply {
-                text = "🔴 Connecting to server..."
-                textSize = 14f
-                gravity = Gravity.CENTER
-                setPadding(0, 0, 0, 20)
+        }
+        ModernUIManager.styleContainer(this, chatContainer)
+        
+        recyclerView = RecyclerView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            clipToPadding = false
+        }
+        
+        chatContainer.addView(recyclerView)
+        
+        // Input container
+        val inputContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        ModernUIManager.styleContainer(this, inputContainer)
+        
+        // Message input area
+        val inputLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.SMALL))
             }
-            
-            // RecyclerView for messages
-            recyclerView = RecyclerView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    0,
-                    1.0f // weight to take remaining space
-                )
+        }
+        
+        messageInput = EditText(this).apply {
+            hint = "Type your message..."
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1.0f
+            ).apply {
+                setMargins(0, 0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.SMALL), 0)
             }
-            
-            // Input area
-            val inputLayout = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 20, 0, 0)
+            maxLines = 4
+        }
+        ModernUIManager.styleEditText(this, messageInput)
+        
+        sendButton = Button(this).apply {
+            text = "Send"
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            setOnClickListener { sendMessage() }
+        }
+        ModernUIManager.styleButton(this, sendButton, ModernUIManager.ButtonType.PRIMARY)
+        
+        inputLayout.addView(messageInput)
+        inputLayout.addView(sendButton)
+        
+        // Action buttons
+        val buttonLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        
+        val ctrlCButton = Button(this).apply {
+            text = "Ctrl+C"
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            ).apply {
+                setMargins(0, 0, ModernUIManager.dpToPx(this@ChatActivity, ModernUIManager.Spacing.SMALL), 0)
             }
+            setOnClickListener { sendCtrlC() }
+        }
+        ModernUIManager.styleButton(this, ctrlCButton, ModernUIManager.ButtonType.SECONDARY)
+        
+        val backButton = Button(this).apply {
+            text = "← Back"
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+            setOnClickListener { finish() }
+        }
+        ModernUIManager.styleButton(this, backButton, ModernUIManager.ButtonType.TEXT)
+        
+        buttonLayout.addView(ctrlCButton)
+        buttonLayout.addView(backButton)
+        
+        // Add input components to container
+        inputContainer.addView(inputLayout)
+        inputContainer.addView(buttonLayout)
+        
+        // Assemble main layout
+        mainLayout.addView(headerContainer)
+        mainLayout.addView(chatContainer)
+        mainLayout.addView(inputContainer)
+        
+        setContentView(mainLayout)
+    }
+    
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             
-            messageInput = EditText(this).apply {
-                hint = "Type your message..."
-                layoutParams = LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1.0f
-                )
-            }
-            
-            sendButton = Button(this).apply {
-                text = "Send"
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            }
-            
-            // Action buttons
-            val buttonLayout = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 10, 0, 0)
-            }
-            
-            val ctrlCButton = Button(this).apply {
-                text = "Ctrl+C"
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            }
-            
-            val backButton = Button(this).apply {
-                text = "← Back"
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                setOnClickListener { finish() }
-            }
-            
-            // Assembly layout
-            inputLayout.addView(messageInput)
-            inputLayout.addView(sendButton)
-            
-            buttonLayout.addView(ctrlCButton)
-            buttonLayout.addView(backButton)
-            
-            mainLayout.addView(titleText)
-            mainLayout.addView(connectionStatus)
-            mainLayout.addView(recyclerView)
-            mainLayout.addView(inputLayout)
-            mainLayout.addView(buttonLayout)
-            
-            setContentView(mainLayout)
-            
-            // Initialize functionality
+            view.updatePadding(
+                left = ModernUIManager.dpToPx(this, ModernUIManager.Spacing.MEDIUM),
+                top = systemBars.top + ModernUIManager.dpToPx(this, ModernUIManager.Spacing.SMALL),
+                right = ModernUIManager.dpToPx(this, ModernUIManager.Spacing.MEDIUM),
+                bottom = maxOf(systemBars.bottom, ime.bottom) + ModernUIManager.dpToPx(this, ModernUIManager.Spacing.SMALL)
+            )
+            insets
+        }
+    }
+    
+    private fun setupChat() {
+        try {
             setupRecyclerView()
             setupListeners()
             connectToServer()
@@ -151,32 +262,43 @@ class ChatActivity : AppCompatActivity(), WebSocketListener {
     }
     
     private fun setupListeners() {
-        sendButton.setOnClickListener {
-            val message = messageInput.text.toString().trim()
-            if (message.isNotBlank()) {
-                // Add user message to chat
-                val chatMessage = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    content = message,
-                    isFromUser = true,
-                    timestamp = System.currentTimeMillis(),
-                    serverId = "user"
-                )
-                
-                chatAdapter.addMessage(chatMessage)
-                messageInput.text.clear()
-                
-                // Scroll to bottom
-                recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
-                
-                // Send to server via WebSocket
-                if (webSocketClient?.isConnected() == true) {
-                    webSocketClient?.sendMessage(message)
-                    Toast.makeText(this, "Message sent to Copilot!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show()
-                }
+        sendButton.setOnClickListener { sendMessage() }
+    }
+    
+    private fun sendMessage() {
+        val message = messageInput.text.toString().trim()
+        if (message.isNotBlank()) {
+            // Add user message to chat
+            val chatMessage = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                content = message,
+                isFromUser = true,
+                timestamp = System.currentTimeMillis(),
+                serverId = "user"
+            )
+            
+            chatAdapter.addMessage(chatMessage)
+            messageInput.text.clear()
+            
+            // Scroll to bottom
+            recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+            
+            // Send to server via WebSocket
+            if (webSocketClient?.isConnected() == true) {
+                webSocketClient?.sendMessage(message)
+                Toast.makeText(this, "Message sent to Copilot!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+    
+    private fun sendCtrlC() {
+        if (webSocketClient?.isConnected() == true) {
+            webSocketClient?.sendMessage("\u0003") // Ctrl+C character
+            Toast.makeText(this, "Ctrl+C sent", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show()
         }
     }
     

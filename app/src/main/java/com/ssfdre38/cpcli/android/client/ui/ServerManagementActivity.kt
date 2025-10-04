@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ssfdre38.cpcli.android.client.data.ServerConfig
 import com.ssfdre38.cpcli.android.client.data.ServerConfigManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import java.util.*
 
 class ServerManagementActivity : AppCompatActivity() {
@@ -18,6 +19,8 @@ class ServerManagementActivity : AppCompatActivity() {
     private lateinit var serverManager: ServerConfigManager
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         
         try {
@@ -439,37 +442,63 @@ class ServerManagementActivity : AppCompatActivity() {
                     // Show loading dialog
                     val loadingDialog = showLoadingDialog("Deleting server...")
                     
-                    // Perform deletion
-                    val deleteResult = serverManager.deleteServer(server.id)
-                    
-                    loadingDialog.dismiss()
-                    
-                    if (deleteResult) {
-                        // Get completely fresh server list
-                        val updatedServers = serverManager.getAllServers()
-                        
-                        // Update adapter with new data
-                        serverAdapter.updateServers(updatedServers)
-                        
-                        // Update active server display
-                        val activeServer = serverManager.getActiveServer()
-                        serverAdapter.setActiveServer(activeServer?.id)
-                        
-                        Toast.makeText(this, 
-                            "✅ Server '${server.name}' deleted successfully", 
-                            Toast.LENGTH_SHORT).show()
-                        
-                        // If no servers left, show helpful message
-                        if (updatedServers.isEmpty()) {
-                            Toast.makeText(this, "💡 Add a new server to get started", Toast.LENGTH_LONG).show()
+                    // Perform deletion on a background thread to avoid UI blocking
+                    Thread {
+                        try {
+                            val deleteResult = serverManager.deleteServer(server.id)
+                            
+                            // Update UI on main thread
+                            runOnUiThread {
+                                try {
+                                    loadingDialog.dismiss()
+                                    
+                                    if (deleteResult) {
+                                        // Get completely fresh server list
+                                        val updatedServers = serverManager.getAllServers()
+                                        
+                                        // Update adapter with new data
+                                        serverAdapter.updateServers(updatedServers)
+                                        
+                                        // Update active server display
+                                        val activeServer = serverManager.getActiveServer()
+                                        serverAdapter.setActiveServer(activeServer?.id)
+                                        
+                                        // Force adapter to notify changes
+                                        serverAdapter.notifyDataSetChanged()
+                                        
+                                        Toast.makeText(this@ServerManagementActivity, 
+                                            "✅ Server '${server.name}' deleted successfully", 
+                                            Toast.LENGTH_SHORT).show()
+                                        
+                                        // If no servers left, show helpful message
+                                        if (updatedServers.isEmpty()) {
+                                            Toast.makeText(this@ServerManagementActivity, 
+                                                "💡 Add a new server to get started", 
+                                                Toast.LENGTH_LONG).show()
+                                        }
+                                    } else {
+                                        Toast.makeText(this@ServerManagementActivity, 
+                                            "❌ Failed to delete server - please try again", 
+                                            Toast.LENGTH_LONG).show()
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(this@ServerManagementActivity, 
+                                        "❌ Error updating UI: ${e.message}", 
+                                        Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Handle background thread errors
+                            runOnUiThread {
+                                loadingDialog.dismiss()
+                                Toast.makeText(this@ServerManagementActivity, 
+                                    "❌ Error deleting server: ${e.message}", 
+                                    Toast.LENGTH_LONG).show()
+                            }
                         }
-                    } else {
-                        Toast.makeText(this, 
-                            "❌ Failed to delete server - please try again", 
-                            Toast.LENGTH_LONG).show()
-                    }
+                    }.start()
                 } catch (e: Exception) {
-                    Toast.makeText(this, "❌ Error deleting server: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "❌ Error starting delete operation: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
             .setNegativeButton("Cancel", null)

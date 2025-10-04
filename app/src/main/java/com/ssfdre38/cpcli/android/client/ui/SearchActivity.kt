@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ssfdre38.cpcli.android.client.R
 import com.ssfdre38.cpcli.android.client.data.ChatMessage
 import com.ssfdre38.cpcli.android.client.data.StorageManager
+import com.ssfdre38.cpcli.android.client.utils.ThemeManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,6 +33,8 @@ class SearchActivity : AppCompatActivity() {
     private val searchResults = mutableListOf<SearchResult>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before calling super.onCreate to prevent flicker
+        ThemeManager.applyActivityTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         
